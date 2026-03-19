@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useNavigate, Link } from 'react-router-dom';
+import { BlockViewLogo } from '../components/ui/BlockViewLogo';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -19,11 +20,8 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-crypto-dark flex items-center justify-center">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            CryptoSaaS
-          </h1>
-          <p className="text-gray-500 mt-2">AI-Powered Crypto Research</p>
+        <div className="flex justify-center mb-8">
+          <BlockViewLogo size="lg" showText={true} showSubtext={true} />
         </div>
 
         <div className="card">

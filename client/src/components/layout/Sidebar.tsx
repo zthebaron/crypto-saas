@@ -5,6 +5,7 @@ import {
 import { useAgentStore } from '../../store/agentStore';
 import { useAuthStore } from '../../store/authStore';
 import { AgentStatusDot } from '../ui/AgentStatusDot';
+import { BlockViewLogo } from '../ui/BlockViewLogo';
 import { AGENT_ROLES, AGENT_LABELS } from '@crypto-saas/shared';
 
 const navItems = [
@@ -24,10 +25,7 @@ export function Sidebar() {
     <aside className="w-64 h-screen bg-gray-900 border-r border-gray-800 flex flex-col fixed left-0 top-0 z-30">
       {/* Logo */}
       <div className="p-5 border-b border-gray-800">
-        <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-          CryptoSaaS
-        </h1>
-        <p className="text-xs text-gray-500 mt-1">AI-Powered Research</p>
+        <BlockViewLogo size="md" showText={true} showSubtext={true} />
       </div>
 
       {/* Navigation */}

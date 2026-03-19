@@ -14,7 +14,7 @@ const pageTitles: Record<string, string> = {
 
 export function Layout() {
   const location = useLocation();
-  const title = pageTitles[location.pathname] || 'CryptoSaaS';
+  const title = pageTitles[location.pathname] || 'BlockView';
 
   return (
     <div className="min-h-screen bg-crypto-dark">
