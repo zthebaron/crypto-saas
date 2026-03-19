@@ -10,16 +10,9 @@ export function Footer() {
       <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-6">
         {/* Left: Social media icons */}
         <div className="flex items-center gap-5">
-          {/* Small logo mark */}
-          <BlockViewLogo size="sm" showText={false} />
-
-          <div className="w-px h-5 bg-gray-700/50" />
-
           {/* X / Twitter */}
           <a
-            href="https://x.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
             className="text-gray-500 hover:text-gray-300 transition-colors"
             aria-label="X"
           >
@@ -30,9 +23,7 @@ export function Footer() {
 
           {/* YouTube */}
           <a
-            href="https://youtube.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
             className="text-gray-500 hover:text-gray-300 transition-colors"
             aria-label="YouTube"
           >
@@ -43,9 +34,7 @@ export function Footer() {
 
           {/* LinkedIn */}
           <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
             className="text-gray-500 hover:text-gray-300 transition-colors"
             aria-label="LinkedIn"
           >
@@ -56,9 +45,7 @@ export function Footer() {
 
           {/* GitHub */}
           <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
             className="text-gray-500 hover:text-gray-300 transition-colors"
             aria-label="GitHub"
           >
@@ -69,9 +56,7 @@ export function Footer() {
 
           {/* Instagram */}
           <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
             className="text-gray-500 hover:text-gray-300 transition-colors"
             aria-label="Instagram"
           >
@@ -82,9 +67,7 @@ export function Footer() {
 
           {/* TikTok */}
           <a
-            href="https://tiktok.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
             className="text-gray-500 hover:text-gray-300 transition-colors"
             aria-label="TikTok"
           >
@@ -95,9 +78,7 @@ export function Footer() {
 
           {/* Discord */}
           <a
-            href="https://discord.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
             className="text-gray-500 hover:text-gray-300 transition-colors"
             aria-label="Discord"
           >
@@ -109,10 +90,10 @@ export function Footer() {
 
         {/* Right: Copyright and links */}
         <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-          <span>&copy; 2026 BlockView Inc.</span>
-          <a href="#" className="hover:text-gray-300 transition-colors underline">Terms of Service</a>
-          <a href="#" className="hover:text-gray-300 transition-colors underline">Privacy Policy</a>
-          <a href="#" className="hover:text-gray-300 transition-colors underline">Usage Policy</a>
+          <span>&copy; 2026 Digital Universe Inc.</span>
+          <a href="/terms" className="hover:text-gray-300 transition-colors">Terms of Service</a>
+          <a href="/privacy" className="hover:text-gray-300 transition-colors">Privacy Policy</a>
+          <a href="/usage-policy" className="hover:text-gray-300 transition-colors">Usage Policy</a>
           <span>
             Powered by{' '}
             <a
