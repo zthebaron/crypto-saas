@@ -90,7 +90,7 @@ export function Footer() {
 
         {/* Right: Copyright and links */}
         <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-          <span>&copy; 2026 Digital Universe Inc.</span>
+          <span>&copy; 2026 BlockView</span>
           <a href="/terms" className="hover:text-gray-300 transition-colors">Terms of Service</a>
           <a href="/privacy" className="hover:text-gray-300 transition-colors">Privacy Policy</a>
           <a href="/usage-policy" className="hover:text-gray-300 transition-colors">Usage Policy</a>

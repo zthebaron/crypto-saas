@@ -175,6 +175,16 @@ export async function initDatabase(): Promise<DbLike> {
     )
   `);
 
+  db.run(`
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id TEXT PRIMARY KEY,
+      user_id TEXT,
+      role TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
   // Indexes
   db.run('CREATE INDEX IF NOT EXISTS idx_signals_run_id ON signals(run_id)');
   db.run('CREATE INDEX IF NOT EXISTS idx_signals_type ON signals(type)');

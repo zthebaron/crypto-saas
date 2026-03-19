@@ -2,6 +2,7 @@ import axios from 'axios';
 import type {
   CoinData, GlobalMetrics, TrendingCoin, AgentReport,
   Signal, User, WatchlistItem, AgentRun, AgentRole, AgentStatus,
+  ChatMessage,
 } from '@crypto-saas/shared';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
@@ -84,4 +85,47 @@ export const watchlist = {
     api.post('/watchlist', { coinId, coinSymbol, coinName }),
   remove: (coinId: number) =>
     api.delete(`/watchlist/${coinId}`),
+};
+
+// --- Chat ---
+export const chat = {
+  getHistory: (limit = 50) =>
+    api.get<{ data: ChatMessage[] }>('/chat/history', { params: { limit } }).then(r => r.data.data),
+  clearHistory: () =>
+    api.delete('/chat/history'),
+  sendMessageStream: async function* (message: string): AsyncGenerator<{ chunk: string; done: boolean }> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    if (!response.ok) throw new Error('Chat request failed');
+
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.slice(6));
+            yield data;
+          } catch { /* skip malformed */ }
+        }
+      }
+    }
+  },
 };

@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { ChatWidget } from '../chat/ChatWidget';
 
 const pageTitles: Record<string, string> = {
   '/': 'Overview',
@@ -26,6 +27,7 @@ export function Layout() {
         </main>
         <Footer />
       </div>
+      <ChatWidget />
     </div>
   );
 }

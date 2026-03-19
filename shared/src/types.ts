@@ -88,7 +88,22 @@ export type WsEventType =
   | 'new_signal'
   | 'report_complete'
   | 'market_update'
-  | 'pipeline_complete';
+  | 'pipeline_complete'
+  | 'chat_stream'
+  | 'chat_done';
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  createdAt: string;
+}
+
+export interface ChatStreamPayload {
+  messageId: string;
+  chunk: string;
+  done: boolean;
+}
 
 export interface WsEvent {
   type: WsEventType;

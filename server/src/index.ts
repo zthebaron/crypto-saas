@@ -14,6 +14,7 @@ import agentRoutes from './routes/agentRoutes';
 import signalRoutes from './routes/signalRoutes';
 import authRoutes from './routes/authRoutes';
 import watchlistRoutes from './routes/watchlistRoutes';
+import chatRoutes from './routes/chatRoutes';
 import type { WsEvent } from '@crypto-saas/shared';
 import { verifyToken } from './services/authService';
 
@@ -42,6 +43,7 @@ app.use('/api/market', marketRoutes);
 app.use('/api/agents', optionalAuth, agentRoutes);
 app.use('/api/signals', signalRoutes);
 app.use('/api/watchlist', watchlistRoutes);
+app.use('/api/chat', optionalAuth, chatRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
