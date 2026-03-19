@@ -1,13 +1,33 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { MessageSquare, X, Send, Trash2, Bot, User } from 'lucide-react';
 import { useChatStore } from '../../store/chatStore';
+import ReactMarkdown from 'react-markdown';
+
+const SLASH_COMMANDS = [
+  { command: '/signals', description: 'View latest trading signals' },
+  { command: '/portfolio', description: 'View portfolio summary' },
+  { command: '/compare', description: 'Compare coins (e.g. /compare BTC ETH)' },
+  { command: '/knowledge', description: 'Search knowledge base' },
+  { command: '/run', description: 'Run the agent pipeline' },
+];
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [showCommands, setShowCommands] = useState(false);
   const { messages, streaming, loading, sendMessage, loadHistory, clearChat } = useChatStore();
+
+  const filteredCommands = useMemo(() => {
+    if (!input.startsWith('/')) return [];
+    const query = input.toLowerCase();
+    return SLASH_COMMANDS.filter(c => c.command.startsWith(query));
+  }, [input]);
+
+  useEffect(() => {
+    setShowCommands(input.startsWith('/') && filteredCommands.length > 0 && !input.includes(' '));
+  }, [input, filteredCommands]);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -106,8 +126,8 @@ export function ChatWidget() {
                   }`}
                 >
                   {msg.role === 'assistant' ? (
-                    <div className="whitespace-pre-wrap break-words">
-                      {msg.content || (streaming ? <span className="inline-block w-2 h-4 bg-indigo-400 animate-pulse rounded-sm" /> : '')}
+                    <div className="prose prose-invert prose-sm max-w-none break-words [&_p]:my-1 [&_ul]:my-1 [&_li]:my-0">
+                      {msg.content ? <ReactMarkdown>{msg.content}</ReactMarkdown> : (streaming ? <span className="inline-block w-2 h-4 bg-indigo-400 animate-pulse rounded-sm" /> : '')}
                     </div>
                   ) : (
                     <div className="whitespace-pre-wrap break-words">{msg.content}</div>
@@ -124,7 +144,21 @@ export function ChatWidget() {
           </div>
 
           {/* Input */}
-          <div className="p-3 border-t border-gray-700 bg-gray-800">
+          <div className="p-3 border-t border-gray-700 bg-gray-800 relative">
+            {showCommands && (
+              <div className="absolute bottom-full left-3 right-3 mb-1 bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-xl">
+                {filteredCommands.map(cmd => (
+                  <button
+                    key={cmd.command}
+                    onClick={() => { setInput(cmd.command + ' '); setShowCommands(false); inputRef.current?.focus(); }}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-700 transition-colors flex items-center gap-3"
+                  >
+                    <span className="text-indigo-400 text-xs font-mono">{cmd.command}</span>
+                    <span className="text-gray-500 text-xs">{cmd.description}</span>
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="flex items-end gap-2">
               <textarea
                 ref={inputRef}

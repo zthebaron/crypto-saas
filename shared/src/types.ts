@@ -90,7 +90,8 @@ export type WsEventType =
   | 'market_update'
   | 'pipeline_complete'
   | 'chat_stream'
-  | 'chat_done';
+  | 'chat_done'
+  | 'notification';
 
 export interface ChatMessage {
   id: string;
@@ -132,4 +133,138 @@ export interface AgentContext {
 export interface AgentOutput {
   report: Omit<AgentReport, 'id' | 'createdAt'>;
   signals: Omit<Signal, 'id' | 'createdAt'>[];
+}
+
+// --- Notifications ---
+export interface NotificationPreferences {
+  userId: string;
+  pushEnabled: boolean;
+  emailEnabled: boolean;
+  signalConfidenceThreshold: number;
+  priceChangeThreshold: number;
+  digestFrequency: 'daily' | 'weekly' | 'none';
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: 'signal' | 'price_alert' | 'pipeline_complete' | 'digest';
+  title: string;
+  body: string;
+  read: boolean;
+  createdAt: string;
+}
+
+// --- Portfolio ---
+export interface PortfolioPosition {
+  id: string;
+  userId: string;
+  coinSymbol: string;
+  coinName: string;
+  entryPrice: number;
+  quantity: number;
+  signalId: string | null;
+  status: 'open' | 'closed';
+  openedAt: string;
+  closedAt: string | null;
+  closePrice: number | null;
+}
+
+export interface PortfolioSummary {
+  positions: (PortfolioPosition & { currentPrice: number; pnl: number; pnlPercent: number })[];
+  totalValue: number;
+  totalPnl: number;
+  totalPnlPercent: number;
+  allocation: { symbol: string; percentage: number; value: number }[];
+}
+
+export interface PortfolioSnapshot {
+  id: string;
+  userId: string;
+  totalValue: number;
+  totalPnl: number;
+  snapshotData: string;
+  createdAt: string;
+}
+
+// --- Documents / Knowledge Base ---
+export interface Document {
+  id: string;
+  userId: string;
+  title: string;
+  filename: string;
+  mimeType: string;
+  content: string;
+  tags: string[];
+  fileSize: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// --- Alert Rules ---
+export type RuleConditionType = 'price_above' | 'price_below' | 'price_change_pct' | 'volume_spike' | 'signal_confidence' | 'new_signal_type';
+export type RuleActionType = 'browser_push' | 'in_app';
+
+export interface AlertRule {
+  id: string;
+  userId: string;
+  name: string;
+  conditionType: RuleConditionType;
+  conditionConfig: {
+    coinSymbol?: string;
+    threshold?: number;
+    signalType?: SignalType;
+    timeframe?: string;
+  };
+  actionType: RuleActionType;
+  actionConfig: {
+    message?: string;
+  };
+  enabled: boolean;
+  lastTriggeredAt: string | null;
+  createdAt: string;
+}
+
+// --- Signal Accuracy ---
+export interface SignalOutcome {
+  id: string;
+  signalId: string;
+  coinSymbol: string;
+  signalType: SignalType;
+  agentRole: AgentRole;
+  entryPrice: number;
+  price24h: number | null;
+  price7d: number | null;
+  price30d: number | null;
+  pnl24h: number | null;
+  pnl7d: number | null;
+  pnl30d: number | null;
+  accurate24h: boolean | null;
+  accurate7d: boolean | null;
+  accurate30d: boolean | null;
+  evaluatedAt: string | null;
+  createdAt: string;
+}
+
+export interface AccuracyMetrics {
+  agentRole: AgentRole;
+  totalSignals: number;
+  accurate24h: number;
+  accurate7d: number;
+  accurate30d: number;
+  accuracy24hPct: number;
+  accuracy7dPct: number;
+  accuracy30dPct: number;
+}
+
+export interface AgentLeaderboard {
+  agents: AccuracyMetrics[];
+  topPerformer: AgentRole;
+  averageAccuracy: number;
+}
+
+// --- Comparison ---
+export interface CoinComparison {
+  coins: CoinData[];
+  signals: Record<string, Signal[]>;
 }

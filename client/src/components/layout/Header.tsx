@@ -3,6 +3,7 @@ import { useMarketStore } from '../../store/marketStore';
 import { useAgentStore } from '../../store/agentStore';
 import { PriceChange } from '../ui/PriceChange';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
+import { NotificationBell } from '../notifications/NotificationBell';
 
 function formatUsd(n: number): string {
   if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T';
@@ -37,6 +38,8 @@ export function Header({ title }: { title: string }) {
             </div>
           </div>
         )}
+
+        <NotificationBell />
 
         <button
           onClick={() => fetchAll()}

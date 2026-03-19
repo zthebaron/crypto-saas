@@ -1,7 +1,13 @@
 import { Router } from 'express';
 import { getChatHistory, saveChatMessage, streamChatResponse, getRecentContext } from '../services/chatService';
+import { processCommand, getAvailableCommands } from '../services/chatCommands';
 
 const router = Router();
+
+// GET /api/chat/commands — list available commands
+router.get('/commands', (_req, res) => {
+  res.json({ data: getAvailableCommands() });
+});
 
 // POST /api/chat — send message, stream response via SSE
 router.post('/', async (req, res) => {
@@ -12,6 +18,20 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Message is required' });
   }
 
+  // Check for slash commands
+  const cmdResult = await processCommand(message.trim(), userId || undefined);
+  if (cmdResult.isCommand && cmdResult.directResponse) {
+    saveChatMessage(userId, 'user', message.trim());
+    saveChatMessage(userId, 'assistant', cmdResult.directResponse);
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.write(`data: ${JSON.stringify({ chunk: cmdResult.directResponse, done: false })}\n\n`);
+    res.write(`data: ${JSON.stringify({ chunk: '', done: true })}\n\n`);
+    res.end();
+    return;
+  }
+
   // Save user message
   saveChatMessage(userId, 'user', message.trim());
 
@@ -19,8 +39,13 @@ router.post('/', async (req, res) => {
   const history = getChatHistory(userId, 20);
   const messages = history.map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }));
 
-  // Get platform context (recent reports, signals)
-  const context = await getRecentContext();
+  // Get platform context (recent reports, signals, knowledge base)
+  let context = await getRecentContext();
+
+  // If slash command returned context, prepend it
+  if (cmdResult.isCommand && cmdResult.context) {
+    context = cmdResult.context + '\n\n' + context;
+  }
 
   // Set up SSE
   res.setHeader('Content-Type', 'text/event-stream');

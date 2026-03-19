@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import { useAuthStore } from './store/authStore';
 import { useAgentStore } from './store/agentStore';
+import { useNotificationStore } from './store/notificationStore';
 import { wsClient } from './services/websocket';
 import { useWebSocket } from './hooks/useWebSocket';
 
@@ -14,9 +15,21 @@ import Watchlist from './pages/Watchlist';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Portfolio from './pages/Portfolio';
+import Compare from './pages/Compare';
+import KnowledgeBase from './pages/KnowledgeBase';
+import AlertRules from './pages/AlertRules';
+import Accuracy from './pages/Accuracy';
+import Pricing from './pages/Pricing';
+import About from './pages/About';
+import News from './pages/News';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import UsagePolicy from './pages/UsagePolicy';
 
 function AppInner() {
   const { updateAgentStatus, setPipelineRunning, fetchTopSignals, fetchRuns } = useAgentStore();
+  const { fetch: fetchNotifications } = useNotificationStore();
 
   const handleAgentStatus = useCallback((payload: any) => {
     updateAgentStatus(payload.role, payload.status);
@@ -31,11 +44,17 @@ function AppInner() {
     setPipelineRunning(false);
     fetchTopSignals();
     fetchRuns();
+    fetchNotifications();
+  }, []);
+
+  const handleNotification = useCallback((payload: any) => {
+    useNotificationStore.getState().addNotification(payload);
   }, []);
 
   useWebSocket('agent_status', handleAgentStatus);
   useWebSocket('report_complete', handleReportComplete);
   useWebSocket('pipeline_complete', handlePipelineComplete);
+  useWebSocket('notification', handleNotification);
 
   return (
     <Routes>
@@ -46,7 +65,18 @@ function AppInner() {
         <Route path="/market" element={<MarketData />} />
         <Route path="/agents" element={<AgentReports />} />
         <Route path="/signals" element={<Signals />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/compare" element={<Compare />} />
+        <Route path="/knowledge" element={<KnowledgeBase />} />
+        <Route path="/rules" element={<AlertRules />} />
+        <Route path="/accuracy" element={<Accuracy />} />
         <Route path="/watchlist" element={<Watchlist />} />
+        <Route path="/news" element={<News />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/usage-policy" element={<UsagePolicy />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
     </Routes>

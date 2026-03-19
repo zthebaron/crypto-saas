@@ -10,6 +10,9 @@ import { RiskAssessorAgent } from './riskAssessorAgent';
 import { OpportunityScoutAgent } from './opportunityScoutAgent';
 import { PortfolioAdvisorAgent } from './portfolioAdvisorAgent';
 import { BaseAgent } from './baseAgent';
+import { evaluateSignals } from '../services/notificationService';
+import { evaluateSignalRules, evaluatePriceRules } from '../services/ruleEngine';
+import { createOutcome } from '../models/outcomeModel';
 
 type BroadcastFn = (event: WsEvent) => void;
 
@@ -115,6 +118,22 @@ export async function runFullPipeline(userId?: string, watchlist?: string[]): Pr
         });
       }
     }
+
+    // Collect all signals from this run for post-processing
+    const allSavedSignals = completedReports.flatMap(r => r.signals);
+
+    // Create outcome records for accuracy tracking
+    for (const signal of allSavedSignals) {
+      const coinPrice = marketData.find(c => c.symbol === signal.coinSymbol)?.price;
+      if (coinPrice) {
+        createOutcome(signal.id, signal.coinSymbol, signal.type, signal.agentRole, coinPrice);
+      }
+    }
+
+    // Evaluate notification thresholds and alert rules
+    try { await evaluateSignals(allSavedSignals); } catch (e) { console.error('[Pipeline] Notification eval error:', e); }
+    try { evaluateSignalRules(allSavedSignals); } catch (e) { console.error('[Pipeline] Rule eval error:', e); }
+    try { evaluatePriceRules(marketData); } catch (e) { console.error('[Pipeline] Price rule eval error:', e); }
 
     completeAgentRun(runId, 'completed');
     emit('pipeline_complete', { runId, status: 'completed' });

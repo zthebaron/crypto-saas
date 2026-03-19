@@ -10,6 +10,8 @@ import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   BarChart, Bar, XAxis, YAxis,
 } from 'recharts';
+import { ExportButton } from '../components/ui/ExportButton';
+import { exportSignalSummaryPdf } from '../services/pdfExport';
 
 const SIGNAL_COLORS: Record<string, string> = {
   buy: '#22c55e', sell: '#ef4444', hold: '#eab308', watch: '#3b82f6',
@@ -79,8 +81,9 @@ export default function Signals() {
             onChange={(e) => setMinConfidence(Number(e.target.value))}
             className="w-32 accent-indigo-500" />
         </div>
-        <div className="ml-auto text-sm text-gray-400">
-          {filtered.length} signal{filtered.length !== 1 ? 's' : ''}
+        <div className="ml-auto flex items-center gap-3">
+          <span className="text-sm text-gray-400">{filtered.length} signal{filtered.length !== 1 ? 's' : ''}</span>
+          {filtered.length > 0 && <ExportButton onClick={() => exportSignalSummaryPdf(filtered)} />}
         </div>
       </div>
 

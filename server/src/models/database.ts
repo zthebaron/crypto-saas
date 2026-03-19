@@ -185,6 +185,130 @@ export async function initDatabase(): Promise<DbLike> {
     )
   `);
 
+  // --- Notifications ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS notification_preferences (
+      user_id TEXT PRIMARY KEY,
+      push_enabled INTEGER DEFAULT 0,
+      email_enabled INTEGER DEFAULT 0,
+      signal_confidence_threshold INTEGER DEFAULT 80,
+      price_change_threshold REAL DEFAULT 10.0,
+      digest_frequency TEXT DEFAULT 'daily',
+      push_subscription TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT NOT NULL,
+      read INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  // --- Portfolio ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS portfolio_positions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      coin_symbol TEXT NOT NULL,
+      coin_name TEXT NOT NULL,
+      entry_price REAL NOT NULL,
+      quantity REAL NOT NULL,
+      signal_id TEXT,
+      status TEXT DEFAULT 'open',
+      opened_at TEXT DEFAULT (datetime('now')),
+      closed_at TEXT,
+      close_price REAL,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS portfolio_snapshots (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      total_value REAL NOT NULL,
+      total_pnl REAL NOT NULL,
+      snapshot_data TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  // --- Documents / Knowledge Base ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS documents (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      filename TEXT NOT NULL,
+      mime_type TEXT NOT NULL,
+      content TEXT NOT NULL,
+      tags TEXT DEFAULT '[]',
+      file_size INTEGER NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS document_tags (
+      document_id TEXT NOT NULL,
+      tag TEXT NOT NULL,
+      PRIMARY KEY (document_id, tag),
+      FOREIGN KEY (document_id) REFERENCES documents(id)
+    )
+  `);
+
+  // --- Alert Rules ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS alert_rules (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      condition_type TEXT NOT NULL,
+      condition_config TEXT NOT NULL,
+      action_type TEXT NOT NULL,
+      action_config TEXT NOT NULL DEFAULT '{}',
+      enabled INTEGER DEFAULT 1,
+      last_triggered_at TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  // --- Signal Outcomes / Accuracy ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS signal_outcomes (
+      id TEXT PRIMARY KEY,
+      signal_id TEXT NOT NULL UNIQUE,
+      coin_symbol TEXT NOT NULL,
+      signal_type TEXT NOT NULL,
+      agent_role TEXT NOT NULL,
+      entry_price REAL NOT NULL,
+      price_24h REAL,
+      price_7d REAL,
+      price_30d REAL,
+      pnl_24h REAL,
+      pnl_7d REAL,
+      pnl_30d REAL,
+      accurate_24h INTEGER,
+      accurate_7d INTEGER,
+      accurate_30d INTEGER,
+      evaluated_at TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (signal_id) REFERENCES signals(id)
+    )
+  `);
+
   // Indexes
   db.run('CREATE INDEX IF NOT EXISTS idx_signals_run_id ON signals(run_id)');
   db.run('CREATE INDEX IF NOT EXISTS idx_signals_type ON signals(type)');
@@ -193,6 +317,17 @@ export async function initDatabase(): Promise<DbLike> {
   db.run('CREATE INDEX IF NOT EXISTS idx_reports_role ON agent_reports(agent_role)');
   db.run('CREATE INDEX IF NOT EXISTS idx_agent_runs_user ON agent_runs(user_id)');
   db.run('CREATE INDEX IF NOT EXISTS idx_cmc_cache_expires ON cmc_cache(expires_at)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(user_id, read)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_positions_user ON portfolio_positions(user_id)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_positions_status ON portfolio_positions(user_id, status)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_snapshots_user ON portfolio_snapshots(user_id, created_at)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_documents_user ON documents(user_id)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_document_tags_tag ON document_tags(tag)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_alert_rules_user ON alert_rules(user_id)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_alert_rules_enabled ON alert_rules(enabled)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_outcomes_signal ON signal_outcomes(signal_id)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_outcomes_agent ON signal_outcomes(agent_role)');
 
   // Save initial state
   const data = db.export();

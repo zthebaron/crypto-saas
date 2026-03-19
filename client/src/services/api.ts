@@ -2,7 +2,10 @@ import axios from 'axios';
 import type {
   CoinData, GlobalMetrics, TrendingCoin, AgentReport,
   Signal, User, WatchlistItem, AgentRun, AgentRole, AgentStatus,
-  ChatMessage,
+  ChatMessage, Notification, NotificationPreferences,
+  PortfolioSummary, PortfolioPosition, PortfolioSnapshot,
+  Document, AlertRule, AccuracyMetrics, AgentLeaderboard, SignalOutcome,
+  CoinComparison,
 } from '@crypto-saas/shared';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
@@ -93,6 +96,8 @@ export const chat = {
     api.get<{ data: ChatMessage[] }>('/chat/history', { params: { limit } }).then(r => r.data.data),
   clearHistory: () =>
     api.delete('/chat/history'),
+  getCommands: () =>
+    api.get<{ data: { command: string; description: string }[] }>('/chat/commands').then(r => r.data.data),
   sendMessageStream: async function* (message: string): AsyncGenerator<{ chunk: string; done: boolean }> {
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE}/chat`, {
@@ -128,4 +133,91 @@ export const chat = {
       }
     }
   },
+};
+
+// --- Notifications ---
+export const notifications = {
+  list: () =>
+    api.get<{ data: Notification[]; unreadCount: number }>('/notifications').then(r => r.data),
+  markRead: (id: string) =>
+    api.put(`/notifications/${id}/read`),
+  markAllRead: () =>
+    api.put('/notifications/read-all'),
+  getPreferences: () =>
+    api.get<{ data: NotificationPreferences }>('/notifications/preferences').then(r => r.data.data),
+  updatePreferences: (prefs: Partial<NotificationPreferences>) =>
+    api.put('/notifications/preferences', prefs),
+  savePushSubscription: (subscription: PushSubscription) =>
+    api.post('/notifications/push-subscription', { subscription }),
+};
+
+// --- Portfolio ---
+export const portfolio = {
+  getSummary: () =>
+    api.get<{ data: PortfolioSummary }>('/portfolio').then(r => r.data.data),
+  openPosition: (coinSymbol: string, coinName: string, entryPrice: number, quantity: number, signalId?: string) =>
+    api.post<{ data: PortfolioPosition }>('/portfolio/positions', { coinSymbol, coinName, entryPrice, quantity, signalId }).then(r => r.data.data),
+  closePosition: (id: string, closePrice: number) =>
+    api.put(`/portfolio/positions/${id}/close`, { closePrice }),
+  deletePosition: (id: string) =>
+    api.delete(`/portfolio/positions/${id}`),
+  getHistory: (limit = 30) =>
+    api.get<{ data: PortfolioSnapshot[] }>('/portfolio/history', { params: { limit } }).then(r => r.data.data),
+  fromSignal: (signalId: string, quantity: number) =>
+    api.post<{ data: PortfolioPosition }>(`/portfolio/from-signal/${signalId}`, { quantity }).then(r => r.data.data),
+};
+
+// --- Compare ---
+export const compare = {
+  getComparison: (symbols: string[]) =>
+    api.get<{ data: CoinComparison }>('/compare', { params: { symbols: symbols.join(',') } }).then(r => r.data.data),
+};
+
+// --- Documents ---
+export const documents = {
+  list: (tag?: string, search?: string) =>
+    api.get<{ data: Document[] }>('/documents', { params: { tag, search } }).then(r => r.data.data),
+  get: (id: string) =>
+    api.get<{ data: Document }>(`/documents/${id}`).then(r => r.data.data),
+  upload: (file: File, title: string, tags: string[]) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('title', title);
+    form.append('tags', JSON.stringify(tags));
+    return api.post<{ data: Document }>('/documents/upload', form).then(r => r.data.data);
+  },
+  update: (id: string, title?: string, tags?: string[]) =>
+    api.put(`/documents/${id}`, { title, tags }),
+  delete: (id: string) =>
+    api.delete(`/documents/${id}`),
+  search: (q: string) =>
+    api.get<{ data: Document[] }>('/documents/search', { params: { q } }).then(r => r.data.data),
+  getTags: () =>
+    api.get<{ data: string[] }>('/documents/tags').then(r => r.data.data),
+};
+
+// --- Alert Rules ---
+export const rules = {
+  list: () =>
+    api.get<{ data: AlertRule[] }>('/rules').then(r => r.data.data),
+  create: (rule: Omit<AlertRule, 'id' | 'userId' | 'enabled' | 'lastTriggeredAt' | 'createdAt'>) =>
+    api.post<{ data: AlertRule }>('/rules', rule).then(r => r.data.data),
+  update: (id: string, updates: Partial<AlertRule>) =>
+    api.put(`/rules/${id}`, updates),
+  toggle: (id: string) =>
+    api.put(`/rules/${id}/toggle`),
+  delete: (id: string) =>
+    api.delete(`/rules/${id}`),
+};
+
+// --- Accuracy ---
+export const accuracy = {
+  getOverall: () =>
+    api.get<{ data: { totalSignals: number; accuracy24hPct: number; accuracy7dPct: number; accuracy30dPct: number } }>('/accuracy').then(r => r.data.data),
+  getByAgent: () =>
+    api.get<{ data: AccuracyMetrics[] }>('/accuracy/agents').then(r => r.data.data),
+  getLeaderboard: () =>
+    api.get<{ data: AgentLeaderboard }>('/accuracy/leaderboard').then(r => r.data.data),
+  getSignalOutcome: (signalId: string) =>
+    api.get<{ data: SignalOutcome }>(`/accuracy/signals/${signalId}`).then(r => r.data.data),
 };

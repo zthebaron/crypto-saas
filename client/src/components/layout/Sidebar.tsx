@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, BarChart3, Bot, Zap, Star, Settings, LogOut,
+  Briefcase, GitCompareArrows, BookOpen, ShieldAlert, Target,
+  CreditCard, Info, Newspaper,
 } from 'lucide-react';
 import { useAgentStore } from '../../store/agentStore';
 import { useAuthStore } from '../../store/authStore';
@@ -13,7 +15,15 @@ const navItems = [
   { to: '/market', icon: BarChart3, label: 'Market Data' },
   { to: '/agents', icon: Bot, label: 'Agent Reports' },
   { to: '/signals', icon: Zap, label: 'Signals' },
+  { to: '/portfolio', icon: Briefcase, label: 'Portfolio' },
+  { to: '/compare', icon: GitCompareArrows, label: 'Compare' },
+  { to: '/knowledge', icon: BookOpen, label: 'Knowledge Base' },
+  { to: '/rules', icon: ShieldAlert, label: 'Alert Rules' },
+  { to: '/accuracy', icon: Target, label: 'Accuracy' },
   { to: '/watchlist', icon: Star, label: 'Watchlist' },
+  { to: '/news', icon: Newspaper, label: 'News' },
+  { to: '/pricing', icon: CreditCard, label: 'Pricing' },
+  { to: '/about', icon: Info, label: 'About Us' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 

@@ -15,6 +15,12 @@ import signalRoutes from './routes/signalRoutes';
 import authRoutes from './routes/authRoutes';
 import watchlistRoutes from './routes/watchlistRoutes';
 import chatRoutes from './routes/chatRoutes';
+import notificationRoutes from './routes/notificationRoutes';
+import portfolioRoutes from './routes/portfolioRoutes';
+import compareRoutes from './routes/compareRoutes';
+import documentRoutes from './routes/documentRoutes';
+import alertRuleRoutes from './routes/alertRuleRoutes';
+import accuracyRoutes from './routes/accuracyRoutes';
 import type { WsEvent } from '@crypto-saas/shared';
 import { verifyToken } from './services/authService';
 
@@ -44,6 +50,12 @@ app.use('/api/agents', optionalAuth, agentRoutes);
 app.use('/api/signals', signalRoutes);
 app.use('/api/watchlist', watchlistRoutes);
 app.use('/api/chat', optionalAuth, chatRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/portfolio', portfolioRoutes);
+app.use('/api/compare', compareRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/rules', alertRuleRoutes);
+app.use('/api/accuracy', accuracyRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

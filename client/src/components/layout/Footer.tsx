@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { BlockViewLogo } from '../ui/BlockViewLogo';
 
 export function Footer() {
@@ -91,9 +92,9 @@ export function Footer() {
         {/* Right: Copyright and links */}
         <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
           <span>&copy; 2026 BlockView</span>
-          <a href="/terms" className="hover:text-gray-300 transition-colors">Terms of Service</a>
-          <a href="/privacy" className="hover:text-gray-300 transition-colors">Privacy Policy</a>
-          <a href="/usage-policy" className="hover:text-gray-300 transition-colors">Usage Policy</a>
+          <Link to="/terms" className="hover:text-gray-300 transition-colors">Terms of Service</Link>
+          <Link to="/privacy" className="hover:text-gray-300 transition-colors">Privacy Policy</Link>
+          <Link to="/usage-policy" className="hover:text-gray-300 transition-colors">Usage Policy</Link>
           <span>
             Powered by{' '}
             <a

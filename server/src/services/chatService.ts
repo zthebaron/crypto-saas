@@ -16,7 +16,14 @@ Guidelines:
 - Always clarify that you provide research and analysis, NOT financial advice
 - If asked about features of BlockView, explain the agent pipeline: Market Scanner → Sentiment Analyst → Risk Assessor → Opportunity Scout → Portfolio Advisor
 - Use markdown formatting for clarity (bold, lists, tables when appropriate)
-- Keep responses focused and under 500 words unless the user asks for detailed analysis`;
+- Keep responses focused and under 500 words unless the user asks for detailed analysis
+
+Available slash commands users can use:
+- /signals — show latest trading signals
+- /portfolio — show portfolio summary
+- /compare BTC ETH — compare coins
+- /knowledge <query> — search knowledge base
+- /run — trigger agent pipeline`;
 
 export async function getRecentContext(): Promise<string> {
   const db = getDb();
@@ -48,6 +55,20 @@ export async function getRecentContext(): Promise<string> {
       parts.push(`- **${s.coin_symbol}**: ${(s.type as string).toUpperCase()} (${s.confidence}% confidence) — ${(s.reasoning as string).slice(0, 100)}`);
     }
   }
+
+  // Get relevant knowledge base documents
+  try {
+    const docs = db.prepare(
+      'SELECT title, content FROM documents ORDER BY updated_at DESC LIMIT 3'
+    ).all();
+    if (docs.length > 0) {
+      parts.push('\n## Knowledge Base');
+      for (const d of docs) {
+        parts.push(`### ${d.title}`);
+        parts.push((d.content as string).slice(0, 400));
+      }
+    }
+  } catch { /* documents table may not exist yet */ }
 
   return parts.join('\n');
 }

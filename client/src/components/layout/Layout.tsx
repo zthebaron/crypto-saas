@@ -9,7 +9,18 @@ const pageTitles: Record<string, string> = {
   '/market': 'Market Data',
   '/agents': 'Agent Reports',
   '/signals': 'Signals',
+  '/portfolio': 'Portfolio',
+  '/compare': 'Compare',
+  '/knowledge': 'Knowledge Base',
+  '/rules': 'Alert Rules',
+  '/accuracy': 'Signal Accuracy',
   '/watchlist': 'Watchlist',
+  '/news': 'News',
+  '/pricing': 'Pricing',
+  '/about': 'About Us',
+  '/terms': 'Terms of Service',
+  '/privacy': 'Privacy Policy',
+  '/usage-policy': 'Usage Policy',
   '/settings': 'Settings',
 };
 
