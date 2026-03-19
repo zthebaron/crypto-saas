@@ -2,10 +2,10 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "npm install"
+    "buildCommand": "echo 'root: no compile needed'"
   },
   "deploy": {
-    "startCommand": "cd server && npx tsx src/index.ts",
+    "startCommand": "npx tsx server/src/index.ts",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
