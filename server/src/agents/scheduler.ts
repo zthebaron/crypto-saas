@@ -9,16 +9,48 @@ let quickScanJob: cron.ScheduledTask | null = null;
 let accuracyJob: cron.ScheduledTask | null = null;
 let snapshotJob: cron.ScheduledTask | null = null;
 
-export function startScheduler() {
-  // Full pipeline every 4 hours
-  fullPipelineJob = cron.schedule('0 */4 * * *', async () => {
-    console.log('[Scheduler] Starting full pipeline run...');
+export type ScheduleInterval = 'off' | '1h' | '6h' | '12h' | '24h';
+
+const CRON_MAP: Record<Exclude<ScheduleInterval, 'off'>, string> = {
+  '1h': '0 * * * *',
+  '6h': '0 */6 * * *',
+  '12h': '0 */12 * * *',
+  '24h': '0 0 * * *',
+};
+
+let currentInterval: ScheduleInterval = '1h';
+
+export function getScheduleInterval(): ScheduleInterval {
+  return currentInterval;
+}
+
+export function setScheduleInterval(interval: ScheduleInterval) {
+  // Stop existing pipeline job
+  fullPipelineJob?.stop();
+  fullPipelineJob = null;
+  currentInterval = interval;
+
+  if (interval === 'off') {
+    console.log('[Scheduler] Pipeline auto-run disabled');
+    return;
+  }
+
+  const cronExpr = CRON_MAP[interval];
+  fullPipelineJob = cron.schedule(cronExpr, async () => {
+    console.log(`[Scheduler] Starting scheduled pipeline run (every ${interval})...`);
     try {
       await runFullPipeline();
     } catch (error: any) {
       console.error('[Scheduler] Full pipeline failed:', error.message);
     }
   });
+
+  console.log(`[Scheduler] Pipeline schedule set to every ${interval} (${cronExpr})`);
+}
+
+export function startScheduler() {
+  // Full pipeline — default every hour
+  setScheduleInterval('1h');
 
   // Quick market scan every hour
   quickScanJob = cron.schedule('0 * * * *', async () => {
@@ -54,7 +86,7 @@ export function startScheduler() {
     }
   });
 
-  console.log('[Scheduler] Scheduled: full pipeline every 4h, market scan every 1h, accuracy every 6h, snapshots daily');
+  console.log('[Scheduler] Scheduled: pipeline every 1h, market scan every 1h, accuracy every 6h, snapshots daily');
 }
 
 export function stopScheduler() {

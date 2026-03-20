@@ -1,11 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, RefreshCw, Sun, Moon, ExternalLink, ChevronDown } from 'lucide-react';
+import { Play, RefreshCw, Sun, Moon, ExternalLink, ChevronDown, Clock, Timer } from 'lucide-react';
 import { useMarketStore } from '../../store/marketStore';
 import { useAgentStore } from '../../store/agentStore';
 import { useThemeStore } from '../../store/themeStore';
 import { PriceChange } from '../ui/PriceChange';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { NotificationBell } from '../notifications/NotificationBell';
+import { agents as agentsApi } from '../../services/api';
+
+const SCHEDULE_OPTIONS = [
+  { value: 'off', label: 'Manual Only' },
+  { value: '1h', label: 'Every Hour' },
+  { value: '6h', label: 'Every 6 Hours' },
+  { value: '12h', label: 'Every 12 Hours' },
+  { value: '24h', label: 'Every 24 Hours' },
+] as const;
 
 const RESEARCH_LINKS = [
   { name: 'TradingView', url: 'https://www.tradingview.com', color: '#2962FF' },
@@ -28,17 +37,35 @@ export function Header({ title }: { title: string }) {
   const fetchAll = useMarketStore((s) => s.fetchAll);
   const { theme, toggleTheme } = useThemeStore();
   const [showResearch, setShowResearch] = useState(false);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [scheduleInterval, setScheduleInterval] = useState('1h');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const scheduleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    agentsApi.getSchedule().then(setScheduleInterval).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setShowResearch(false);
       }
+      if (scheduleRef.current && !scheduleRef.current.contains(e.target as Node)) {
+        setShowSchedule(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleScheduleChange = async (interval: string) => {
+    try {
+      await agentsApi.setSchedule(interval);
+      setScheduleInterval(interval);
+    } catch { }
+    setShowSchedule(false);
+  };
 
   return (
     <header className="h-16 bg-gray-900/80 backdrop-blur border-b border-gray-800 flex items-center justify-between px-6">
@@ -114,14 +141,52 @@ export function Header({ title }: { title: string }) {
           <RefreshCw size={16} />
         </button>
 
-        <button
-          onClick={() => triggerRun()}
-          disabled={pipelineRunning}
-          className="btn-primary flex items-center gap-2 text-sm disabled:opacity-50"
-        >
-          {pipelineRunning ? <LoadingSpinner size="sm" /> : <Play size={14} />}
-          {pipelineRunning ? 'Running...' : 'Run Agents'}
-        </button>
+        <div className="flex items-center">
+          <button
+            onClick={() => triggerRun()}
+            disabled={pipelineRunning}
+            className="btn-primary flex items-center gap-2 text-sm disabled:opacity-50 rounded-r-none"
+          >
+            {pipelineRunning ? <LoadingSpinner size="sm" /> : <Play size={14} />}
+            {pipelineRunning ? 'Running...' : 'Run Agents'}
+          </button>
+
+          {/* Schedule Dropdown */}
+          <div className="relative" ref={scheduleRef}>
+            <button
+              onClick={() => setShowSchedule(!showSchedule)}
+              className="btn-primary flex items-center gap-1 text-sm rounded-l-none border-l border-indigo-400/30 px-2 py-2"
+              title={`Schedule: ${SCHEDULE_OPTIONS.find(o => o.value === scheduleInterval)?.label || 'Manual'}`}
+            >
+              <Timer size={13} />
+              <ChevronDown size={10} className={`transition-transform ${showSchedule ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showSchedule && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 border border-gray-800 rounded-xl shadow-xl shadow-black/30 py-2 z-50">
+                <p className="px-3 py-1.5 text-[10px] text-gray-500 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                  <Clock size={10} /> Auto-Run Schedule
+                </p>
+                {SCHEDULE_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => handleScheduleChange(opt.value)}
+                    className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                      scheduleInterval === opt.value
+                        ? 'text-indigo-400 bg-indigo-500/10'
+                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    }`}
+                  >
+                    {opt.label}
+                    {scheduleInterval === opt.value && (
+                      <span className="text-[10px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded">Active</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );

@@ -58,6 +58,10 @@ export const agents = {
     api.get<{ data: AgentReport }>(`/agents/reports/${id}`).then(r => r.data.data),
   getRuns: (limit = 20) =>
     api.get<{ data: AgentRun[] }>('/agents/runs', { params: { limit } }).then(r => r.data.data),
+  getSchedule: () =>
+    api.get<{ interval: string }>('/agents/schedule').then(r => r.data.interval),
+  setSchedule: (interval: string) =>
+    api.put<{ interval: string; message: string }>('/agents/schedule', { interval }).then(r => r.data),
 };
 
 // --- Signals ---

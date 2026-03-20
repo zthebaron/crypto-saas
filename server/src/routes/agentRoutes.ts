@@ -2,8 +2,12 @@ import { Router } from 'express';
 import { runFullPipeline, runSingleAgent, getAgentStatuses } from '../agents/coordinator';
 import { getRecentReports, getReportsByRunId, getReportById } from '../models/reportModel';
 import { getRecentRuns } from '../models/runModel';
+import { getScheduleInterval, setScheduleInterval } from '../agents/scheduler';
+import type { ScheduleInterval } from '../agents/scheduler';
 import type { AgentRole } from '@crypto-saas/shared';
 import { AGENT_ROLES } from '@crypto-saas/shared';
+
+const VALID_INTERVALS: ScheduleInterval[] = ['off', '1h', '6h', '12h', '24h'];
 
 const router = Router();
 
@@ -85,6 +89,22 @@ router.get('/runs', (req, res) => {
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to fetch runs' });
   }
+});
+
+// Get current schedule interval
+router.get('/schedule', (_req, res) => {
+  res.json({ interval: getScheduleInterval() });
+});
+
+// Update schedule interval
+router.put('/schedule', (req, res) => {
+  const { interval } = req.body;
+  if (!VALID_INTERVALS.includes(interval)) {
+    res.status(400).json({ error: `Invalid interval. Must be one of: ${VALID_INTERVALS.join(', ')}` });
+    return;
+  }
+  setScheduleInterval(interval);
+  res.json({ interval, message: `Schedule updated to ${interval === 'off' ? 'disabled' : `every ${interval}`}` });
 });
 
 export default router;
