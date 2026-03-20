@@ -11,7 +11,7 @@ const envSchema = z.object({
   PORT: z.string().default('3001'),
   DATABASE_PATH: z.string().default('./data/crypto-saas.db'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  CORS_ORIGIN: z.string().default('*'),
+  CORS_ORIGIN: z.string().default('https://block-view.app'),
 });
 
 const parsed = envSchema.safeParse(process.env);

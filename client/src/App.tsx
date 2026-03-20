@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Layout } from './components/layout/Layout';
@@ -37,6 +37,14 @@ import BrandKit from './pages/BrandKit';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 const queryClient = new QueryClient();
+
+function AdminGuard({ children }: { children: React.ReactNode }) {
+  const user = useAuthStore((s) => s.user);
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+}
 
 function AppInner() {
   const { updateAgentStatus, setPipelineRunning, fetchTopSignals, fetchRuns } = useAgentStore();
@@ -93,7 +101,7 @@ function AppInner() {
         <Route path="/integrations" element={<Integrations />} />
         <Route path="/trade" element={<Trade />} />
         <Route path="/brand" element={<BrandKit />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
         <Route path="/settings" element={<Settings />} />
       </Route>
     </Routes>

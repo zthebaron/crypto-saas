@@ -71,6 +71,7 @@ export interface User {
   id: string;
   email: string;
   displayName: string;
+  role?: 'user' | 'admin';
   tier: 'free' | 'pro' | 'premium';
   createdAt: string;
 }

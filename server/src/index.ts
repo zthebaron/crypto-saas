@@ -6,7 +6,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { config } from './config';
 import { initDatabase } from './models/database';
 import { rateLimiter } from './middleware/rateLimiter';
-import { optionalAuth } from './middleware/authMiddleware';
+import { requireAuth, optionalAuth } from './middleware/authMiddleware';
 import { setBroadcast } from './agents/coordinator';
 import { startScheduler } from './agents/scheduler';
 import marketRoutes from './routes/marketRoutes';
@@ -31,13 +31,37 @@ import { verifyToken } from './services/authService';
 const app = express();
 const server = http.createServer(app);
 
-// Middleware
+// Security headers (in lieu of helmet — zero dependency)
+app.disable('x-powered-by');
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (!config.isDev) {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  next();
+});
+
+// CORS — explicit origins, never wildcard with credentials
 app.use(cors({
-  origin: config.corsOrigin === '*' ? true : config.corsOrigin.split(','),
+  origin: config.corsOrigin === '*'
+    ? ['https://block-view.app', 'http://localhost:5173']
+    : config.corsOrigin.split(',').map(o => o.trim()),
   credentials: true,
 }));
-app.use(express.json());
+
+app.use(express.json({ limit: '1mb' }));
+
+// Global rate limiter: 120 req/min
 app.use(rateLimiter(120));
+
+// Stricter rate limits on auth endpoints
+app.use('/api/auth/login', rateLimiter(10));
+app.use('/api/auth/register', rateLimiter(5));
+app.use('/api/auth/forgot-password', rateLimiter(3));
 
 // Request logging in dev
 if (config.isDev) {
@@ -50,7 +74,7 @@ if (config.isDev) {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/market', marketRoutes);
-app.use('/api/agents', optionalAuth, agentRoutes);
+app.use('/api/agents', requireAuth, agentRoutes);        // Was optionalAuth — now requires login
 app.use('/api/signals', signalRoutes);
 app.use('/api/watchlist', watchlistRoutes);
 app.use('/api/chat', optionalAuth, chatRoutes);
@@ -60,7 +84,7 @@ app.use('/api/compare', compareRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/rules', alertRuleRoutes);
 app.use('/api/accuracy', accuracyRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/admin', adminRoutes);                       // Admin auth handled inside adminRoutes
 app.use('/api/payments', paymentRoutes);
 app.use('/api/api-keys', apiKeyRoutes);
 app.use('/api/trade', tradeRoutes);
@@ -72,14 +96,29 @@ app.get('/api/health', (_req, res) => {
 
 // WebSocket server
 const wss = new WebSocketServer({ server, path: '/ws' });
-const wsClients = new Set<WebSocket>();
 
-wss.on('connection', (ws, req) => {
-  // Optional auth via query param
+interface AuthenticatedWs extends WebSocket {
+  userId?: string;
+  isAuthenticated?: boolean;
+}
+
+const wsClients = new Set<AuthenticatedWs>();
+
+wss.on('connection', (ws: AuthenticatedWs, req) => {
   const url = new URL(req.url || '', `http://localhost`);
   const token = url.searchParams.get('token');
+
   if (token) {
-    try { verifyToken(token); } catch { /* allow unauthenticated connections */ }
+    try {
+      const payload = verifyToken(token);
+      ws.userId = payload.userId;
+      ws.isAuthenticated = true;
+    } catch {
+      ws.close(4001, 'Invalid or expired token');
+      return;
+    }
+  } else {
+    ws.isAuthenticated = false;
   }
 
   wsClients.add(ws);

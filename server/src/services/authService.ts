@@ -18,7 +18,7 @@ export function generateToken(user: User): string {
   return jwt.sign(
     { userId: user.id, email: user.email, tier: user.tier } as TokenPayload,
     config.jwtSecret,
-    { expiresIn: '7d' }
+    { expiresIn: '24h' }
   );
 }
 
@@ -62,11 +62,10 @@ export function getProfile(userId: string): User | undefined {
   return findUserById(userId);
 }
 
-export function requestPasswordReset(email: string): { token: string; message: string } {
+export function requestPasswordReset(email: string): { message: string } {
   const user = findUserByEmail(email);
   if (!user) {
-    // Don't reveal whether email exists — always return success message
-    return { token: '', message: 'If an account with that email exists, a reset link has been generated.' };
+    return { message: 'If an account with that email exists, a reset link has been sent.' };
   }
 
   const token = crypto.randomBytes(32).toString('hex');
@@ -81,7 +80,10 @@ export function requestPasswordReset(email: string): { token: string; message: s
     if (val.expiresAt < Date.now()) resetTokens.delete(key);
   }
 
-  return { token, message: 'If an account with that email exists, a reset link has been generated.' };
+  // TODO: Send token via email (SendGrid/SES). Never return token in API response.
+  console.log(`[SECURITY] Password reset token generated for ${email}`);
+
+  return { message: 'If an account with that email exists, a reset link has been sent.' };
 }
 
 export async function resetPassword(token: string, newPassword: string): Promise<{ user: User; token: string }> {

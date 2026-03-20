@@ -29,14 +29,19 @@ const navItems = [
   { to: '/about', icon: Info, label: 'About Us' },
   { to: '/integrations', icon: Plug, label: 'Integrations' },
   { to: '/brand', icon: Palette, label: 'Brand Kit' },
-  { to: '/admin', icon: ShieldCheck, label: 'Admin' },
+  { to: '/admin', icon: ShieldCheck, label: 'Admin', adminOnly: true },
   { to: '/settings', icon: Settings, label: 'Settings' },
-];
+] as const;
 
 export function Sidebar() {
   const agentStatuses = useAgentStore((s) => s.agentStatuses);
   const { user, logout } = useAuthStore();
   const { collapsed, mobileOpen, toggleCollapsed, setMobileOpen } = useSidebarStore();
+
+  // Filter admin-only items for non-admin users
+  const visibleNavItems = navItems.filter(item =>
+    !('adminOnly' in item && item.adminOnly) || user?.role === 'admin'
+  );
 
   const sidebarWidth = collapsed ? 'w-[72px]' : 'w-64';
 
@@ -74,7 +79,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto scrollbar-thin">
-        {navItems.map(({ to, icon: Icon, label }) => (
+        {visibleNavItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
@@ -194,7 +199,7 @@ export function Sidebar() {
 
           {/* Nav */}
           <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-            {navItems.map(({ to, icon: Icon, label }) => (
+            {visibleNavItems.map(({ to, icon: Icon, label }) => (
               <NavLink
                 key={to}
                 to={to}

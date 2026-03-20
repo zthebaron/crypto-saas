@@ -9,7 +9,7 @@ export function createUser(email: string, passwordHash: string, displayName: str
     'INSERT INTO users (id, email, password_hash, display_name) VALUES (?, ?, ?, ?)'
   ).run(id, email, passwordHash, displayName);
 
-  return { id, email, displayName, tier: 'free', createdAt: new Date().toISOString() };
+  return { id, email, displayName, role: 'user', tier: 'free', createdAt: new Date().toISOString() };
 }
 
 export function findUserByEmail(email: string): (User & { passwordHash: string }) | undefined {
@@ -20,6 +20,7 @@ export function findUserByEmail(email: string): (User & { passwordHash: string }
     id: row.id,
     email: row.email,
     displayName: row.display_name,
+    role: row.role || 'user',
     tier: row.tier,
     createdAt: row.created_at,
     passwordHash: row.password_hash,
@@ -34,6 +35,7 @@ export function findUserById(id: string): User | undefined {
     id: row.id,
     email: row.email,
     displayName: row.display_name,
+    role: row.role || 'user',
     tier: row.tier,
     createdAt: row.created_at,
   };

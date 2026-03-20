@@ -1,12 +1,14 @@
 import { Router } from 'express';
-import { optionalAuth } from '../middleware/authMiddleware';
+import { requireAuth } from '../middleware/authMiddleware';
+import { requireAdmin } from '../middleware/adminMiddleware';
 import * as adminModel from '../models/adminModel';
 import { updateUserTier } from '../models/userModel';
 
 const router = Router();
 
-// Admin dashboard is open-access for now (no auth/role check)
-router.use(optionalAuth);
+// Admin routes require authentication + admin role
+router.use(requireAuth);
+router.use(requireAdmin);
 
 // Dashboard stats
 router.get('/stats', (req, res) => {

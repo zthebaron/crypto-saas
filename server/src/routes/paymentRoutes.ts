@@ -3,9 +3,15 @@ import { requireAuth } from '../middleware/authMiddleware';
 import { createSubscription, createPayment } from '../models/adminModel';
 import { updateUserTier } from '../models/userModel';
 
-const PROMO_CODES: Record<string, { tier: 'platinum' | 'enterprise'; label: string }> = {
-  'SHWOOP': { tier: 'enterprise', label: 'Premium Enterprise' },
-};
+// Promo codes loaded from env var: PROMO_CODES='{"CODE":{"tier":"enterprise","label":"Label"}}'
+const PROMO_CODES: Record<string, { tier: 'platinum' | 'enterprise'; label: string }> = (() => {
+  try {
+    return process.env.PROMO_CODES ? JSON.parse(process.env.PROMO_CODES) : {};
+  } catch {
+    console.error('[SECURITY] Invalid PROMO_CODES env var format');
+    return {};
+  }
+})();
 
 const router = Router();
 router.use(requireAuth);
@@ -22,7 +28,8 @@ router.post('/checkout/stripe', async (req, res) => {
     createPayment(req.user!.userId, prices[plan] / 100, 'stripe', `sim_${Date.now()}`, sub.id);
     res.json({ data: { subscriptionId: sub.id, url: null, message: 'Subscription activated (demo mode)' } });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('[Payment error]', err);
+    res.status(500).json({ error: 'Payment processing failed' });
   }
 });
 
@@ -36,7 +43,8 @@ router.post('/checkout/paypal', async (req, res) => {
     createPayment(req.user!.userId, prices[plan], 'paypal', `pp_${Date.now()}`, sub.id);
     res.json({ data: { subscriptionId: sub.id, url: null, message: 'Subscription activated (demo mode)' } });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('[Payment error]', err);
+    res.status(500).json({ error: 'Payment processing failed' });
   }
 });
 
@@ -48,9 +56,11 @@ router.post('/checkout/crypto', async (req, res) => {
     const prices: Record<string, number> = { platinum: 49, enterprise: 199 };
     const sub = createSubscription(req.user!.userId, plan, 'crypto');
     createPayment(req.user!.userId, prices[plan], 'crypto', `crypto_${Date.now()}`, sub.id);
-    res.json({ data: { subscriptionId: sub.id, walletAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68', message: 'Subscription activated (demo mode)' } });
+    const walletAddress = process.env.PAYMENT_WALLET_ADDRESS || '';
+    res.json({ data: { subscriptionId: sub.id, walletAddress, message: 'Subscription activated (demo mode)' } });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('[Payment error]', err);
+    res.status(500).json({ error: 'Payment processing failed' });
   }
 });
 
@@ -88,7 +98,8 @@ router.post('/redeem-code', (req, res) => {
       message: `Promo code applied! You've been upgraded to ${promo.label}.`,
     });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('[Payment error]', err);
+    res.status(500).json({ error: 'Payment processing failed' });
   }
 });
 

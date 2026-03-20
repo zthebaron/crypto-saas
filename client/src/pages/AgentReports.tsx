@@ -215,8 +215,19 @@ function ReportContent({ content }: { content: string }) {
     listItems = [];
   };
 
-  const inlineFormat = (text: string): string => {
+  /** Sanitize text to prevent XSS before inserting as HTML */
+  const sanitize = (text: string): string => {
     return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  };
+
+  const inlineFormat = (text: string): string => {
+    // Sanitize first, then apply markdown formatting
+    return sanitize(text)
       .replace(/\*\*(.+?)\*\*/g, '<strong class="text-indigo-300 font-semibold">$1</strong>')
       .replace(/\*(.+?)\*/g, '<em class="text-gray-200">$1</em>')
       .replace(/`(.+?)`/g, '<code class="bg-gray-800 px-1.5 py-0.5 rounded text-indigo-300 text-xs">$1</code>');
@@ -296,6 +307,8 @@ function PipelineSummary({ reports, searchQuery }: { reports: AgentReport[]; sea
   const highlightText = (text: string, maxLen?: number) => {
     let t = maxLen ? text.slice(0, maxLen) : text;
     if (maxLen && text.length > maxLen) t += '...';
+    // Sanitize before injecting as HTML to prevent XSS
+    t = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     if (!searchQuery.trim()) return t;
     const regex = new RegExp(`(${escapeRegex(searchQuery.trim())})`, 'gi');
     return t.replace(regex, '<mark class="bg-yellow-500/30 text-yellow-200 rounded px-0.5">$1</mark>');
