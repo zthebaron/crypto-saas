@@ -21,8 +21,12 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-crypto-dark flex items-center justify-center">
       <div className="w-full max-w-md">
-        <Link to="/" className="flex justify-center mb-8 cursor-pointer">
-          <BlockViewLogo size="lg" showText={true} showSubtext={true} />
+        <Link to="/" className="block mb-6 cursor-pointer">
+          <img
+            src="/images/blockview-banner.png"
+            alt="BlockView — Crypto Insights & Analysis"
+            className="w-full rounded-2xl shadow-2xl shadow-black/40 border border-gray-800 hover:border-gray-700 transition-colors"
+          />
         </Link>
 
         <div className="card">
