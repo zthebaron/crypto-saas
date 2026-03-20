@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, RefreshCw, Sun, Moon, ExternalLink, ChevronDown, Clock, Timer } from 'lucide-react';
+import { Play, RefreshCw, Sun, Moon, ExternalLink, ChevronDown, Clock, Timer, Menu } from 'lucide-react';
 import { useMarketStore } from '../../store/marketStore';
 import { useAgentStore } from '../../store/agentStore';
 import { useThemeStore } from '../../store/themeStore';
+import { useSidebarStore } from '../../store/sidebarStore';
 import { PriceChange } from '../ui/PriceChange';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { agents as agentsApi } from '../../services/api';
 import { ConnectWallet } from '../wallet/ConnectWallet';
+import { BlockViewLogo } from '../ui/BlockViewLogo';
 
 const SCHEDULE_OPTIONS = [
   { value: 'off', label: 'Manual Only' },
@@ -37,6 +39,7 @@ export function Header({ title }: { title: string }) {
   const { triggerRun, pipelineRunning } = useAgentStore();
   const fetchAll = useMarketStore((s) => s.fetchAll);
   const { theme, toggleTheme } = useThemeStore();
+  const { toggleMobileOpen } = useSidebarStore();
   const [showResearch, setShowResearch] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
   const [scheduleInterval, setScheduleInterval] = useState('1h');
@@ -69,11 +72,28 @@ export function Header({ title }: { title: string }) {
   };
 
   return (
-    <header className="h-16 bg-gray-900/80 backdrop-blur border-b border-gray-800 flex items-center justify-between px-6">
-      <h2 className="text-lg font-semibold text-gray-100">{title}</h2>
+    <header className="h-14 md:h-16 bg-gray-900/80 backdrop-blur border-b border-gray-800 flex items-center justify-between px-3 md:px-6 sticky top-0 z-20">
+      {/* Left side: hamburger + title */}
+      <div className="flex items-center gap-3 min-w-0">
+        {/* Mobile hamburger */}
+        <button
+          onClick={toggleMobileOpen}
+          className="lg:hidden p-2 -ml-1 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
 
-      <div className="flex items-center gap-4">
-        {/* Global ticker */}
+        {/* Mobile logo (visible when sidebar hidden) */}
+        <div className="lg:hidden flex-shrink-0">
+          <BlockViewLogo size="sm" showText={false} />
+        </div>
+
+        <h2 className="text-base md:text-lg font-semibold text-gray-100 truncate">{title}</h2>
+      </div>
+
+      <div className="flex items-center gap-2 md:gap-4">
+        {/* Global ticker - hidden on smaller screens */}
         {globalMetrics && (
           <div className="hidden xl:flex items-center gap-5 text-xs text-gray-400">
             <div>
@@ -92,7 +112,7 @@ export function Header({ title }: { title: string }) {
         )}
 
         {/* Research Links Dropdown */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative hidden md:block" ref={dropdownRef}>
           <button
             onClick={() => setShowResearch(!showResearch)}
             className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-200 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition-colors"
@@ -132,26 +152,30 @@ export function Header({ title }: { title: string }) {
           {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
 
-        <ConnectWallet />
+        {/* Wallet - hidden on very small screens */}
+        <div className="hidden sm:block">
+          <ConnectWallet />
+        </div>
 
         <NotificationBell />
 
         <button
           onClick={() => fetchAll()}
-          className="p-2 text-gray-400 hover:text-gray-200 transition-colors"
+          className="hidden md:block p-2 text-gray-400 hover:text-gray-200 transition-colors"
           title="Refresh market data"
         >
           <RefreshCw size={16} />
         </button>
 
-        <div className="flex items-center">
+        {/* Run Agents + Schedule */}
+        <div className="hidden sm:flex items-center">
           <button
             onClick={() => triggerRun()}
             disabled={pipelineRunning}
-            className="btn-primary flex items-center gap-2 text-sm disabled:opacity-50 rounded-r-none"
+            className="btn-primary flex items-center gap-2 text-xs md:text-sm disabled:opacity-50 rounded-r-none px-2 md:px-3"
           >
             {pipelineRunning ? <LoadingSpinner size="sm" /> : <Play size={14} />}
-            {pipelineRunning ? 'Running...' : 'Run Agents'}
+            <span className="hidden md:inline">{pipelineRunning ? 'Running...' : 'Run Agents'}</span>
           </button>
 
           {/* Schedule Dropdown */}
