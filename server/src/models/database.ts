@@ -381,8 +381,9 @@ export async function initDatabase(): Promise<DbLike> {
   db.run('CREATE INDEX IF NOT EXISTS idx_outcomes_signal ON signal_outcomes(signal_id)');
   db.run('CREATE INDEX IF NOT EXISTS idx_outcomes_agent ON signal_outcomes(agent_role)');
 
-  // Ensure admin role for platform owner
+  // Ensure admin role for platform owners
   db.run("UPDATE users SET role = 'admin', tier = 'enterprise' WHERE email = 'thefirmla@gmail.com'");
+  db.run("UPDATE users SET role = 'admin', tier = 'enterprise' WHERE email = 'timdevallee@gmail.com'");
 
   // Save initial state
   const data = db.export();

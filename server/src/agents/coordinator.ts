@@ -1,5 +1,6 @@
 import type { AgentRole, AgentContext, AgentReport, WsEvent } from '@crypto-saas/shared';
 import { AGENT_ROLES, AGENT_LABELS } from '@crypto-saas/shared';
+import { config } from '../config';
 import * as cmcService from '../services/cmcService';
 import { createReport } from '../models/reportModel';
 import { createSignal } from '../models/signalModel';
@@ -47,13 +48,37 @@ export async function runFullPipeline(userId?: string, watchlist?: string[]): Pr
 
   console.log(`[Pipeline] Starting full pipeline run ${runId}`);
 
+  // Pre-flight check: validate API key is configured (not placeholder)
+  if (!config.anthropicApiKey || config.anthropicApiKey === 'your_anthropic_api_key_here') {
+    const errorMsg = 'ANTHROPIC_API_KEY is not configured. Set a valid key in server/.env';
+    console.error(`[Pipeline] FATAL: ${errorMsg}`);
+    completeAgentRun(runId, 'error');
+    emit('pipeline_complete', { runId, status: 'error', error: errorMsg });
+    throw new Error(errorMsg);
+  }
+
   try {
     // Fetch market data once
-    const [marketData, globalMetrics, trending] = await Promise.all([
-      cmcService.getListingsLatest(100),
-      cmcService.getGlobalMetrics(),
-      cmcService.getTrendingGainersLosers(),
-    ]);
+    console.log(`[Pipeline] Fetching market data...`);
+    let marketData, globalMetrics, trending;
+    try {
+      [marketData, globalMetrics, trending] = await Promise.all([
+        cmcService.getListingsLatest(100),
+        cmcService.getGlobalMetrics(),
+        cmcService.getTrendingGainersLosers(),
+      ]);
+      console.log(`[Pipeline] Market data fetched: ${marketData.length} coins`);
+    } catch (dataError: any) {
+      const errorMsg = `Failed to fetch market data: ${dataError.message}. Check CMC_API_KEY in server/.env`;
+      console.error(`[Pipeline] ${errorMsg}`);
+      completeAgentRun(runId, 'error');
+      for (const role of AGENT_ROLES) {
+        agentStatuses[role] = 'error';
+        emit('agent_status', { role, status: 'error', error: errorMsg, runId, label: AGENT_LABELS[role] });
+      }
+      emit('pipeline_complete', { runId, status: 'error', error: errorMsg });
+      throw new Error(errorMsg);
+    }
 
     const completedReports: AgentReport[] = [];
 
@@ -107,15 +132,30 @@ export async function runFullPipeline(userId?: string, watchlist?: string[]): Pr
 
         console.log(`[Pipeline] ${AGENT_LABELS[role]} completed with ${savedSignals.length} signals`);
       } catch (error: any) {
-        console.error(`[Pipeline] ${AGENT_LABELS[role]} error:`, error.message);
+        const errorDetail = error.status === 401
+          ? `Anthropic API authentication failed — check ANTHROPIC_API_KEY`
+          : error.status === 429
+          ? `Anthropic API rate limit exceeded — try again later`
+          : error.message;
+        console.error(`[Pipeline] ${AGENT_LABELS[role]} error:`, errorDetail, error.status ? `(HTTP ${error.status})` : '');
         agentStatuses[role] = 'error';
         emit('agent_status', {
           role,
           status: 'error',
-          error: error.message,
+          error: errorDetail,
           runId,
           label: AGENT_LABELS[role],
         });
+        // Don't silently continue — if the first agent fails with auth error, abort pipeline
+        if (error.status === 401) {
+          console.error(`[Pipeline] Aborting pipeline — API key is invalid`);
+          completeAgentRun(runId, 'error');
+          for (const remaining of AGENT_ROLES.filter(r => agentStatuses[r] === 'idle')) {
+            agentStatuses[remaining] = 'error';
+          }
+          emit('pipeline_complete', { runId, status: 'error', error: errorDetail });
+          throw new Error(errorDetail);
+        }
       }
     }
 

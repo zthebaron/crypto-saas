@@ -82,7 +82,7 @@ export default function About() {
         <h2 className="text-xl font-bold text-white mb-4">Leadership Team</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { name: 'Alex Chen', role: 'CEO & Co-Founder', bio: 'Former quant at Goldman Sachs. 20 years in financial markets. Early Bitcoin adopter (2010).' },
+            { name: 'Tim de Vallee', role: 'CEO & Co-Founder', bio: 'Former quant at Goldman Sachs. 20 years in financial markets. Early Bitcoin adopter (2010).' },
             { name: 'Sarah Williams', role: 'CTO & Co-Founder', bio: 'MIT Media Lab alumna. Led AI research at DeepMind. Pioneer in applying LLMs to financial analysis.' },
             { name: 'Marcus Rivera', role: 'Head of Research', bio: '15 years in crypto markets. Previously led digital asset research at Fidelity. Published author on DeFi.' },
           ].map(({ name, role, bio }) => (

@@ -4,6 +4,7 @@ import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { AgentStatusDot } from '../components/ui/AgentStatusDot';
 import { SignalBadge } from '../components/ui/Badge';
 import { ConfidenceBar } from '../components/ui/ConfidenceBar';
+import { AnimatedPipeline } from '../components/ui/AnimatedPipeline';
 import { AGENT_ROLES, AGENT_LABELS } from '@crypto-saas/shared';
 import type { AgentRole, AgentReport, Signal } from '@crypto-saas/shared';
 import { ExportButton } from '../components/ui/ExportButton';
@@ -471,6 +472,9 @@ export default function AgentReports() {
   return (
     <div className="space-y-6">
 
+      {/* ── Animated Pipeline Visualization ── */}
+      <AnimatedPipeline />
+
       {/* ── Header Bar ── */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
@@ -721,29 +725,10 @@ export default function AgentReports() {
             <Bot size={40} className="text-gray-600" />
           </div>
           <h3 className="text-xl font-bold text-gray-200 mb-2">No Agent Runs Yet</h3>
-          <p className="text-sm text-gray-500 max-w-lg mx-auto text-center mb-8 leading-relaxed">
-            Start the AI agent pipeline to generate comprehensive market analysis. Each run processes data
+          <p className="text-sm text-gray-500 max-w-lg mx-auto text-center leading-relaxed">
+            Use the pipeline visualization above to start the AI analysis chain. Each run processes data
             through 5 specialized agents in sequence, producing detailed reports and trading signals.
           </p>
-          <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-6 max-w-2xl w-full">
-            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center mb-5">Pipeline Flow</h4>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              {AGENT_ROLES.map((role, i) => {
-                const Icon = AGENT_ICONS[role];
-                return (
-                  <div key={role} className="flex items-center gap-2">
-                    <div className="flex flex-col items-center gap-1.5">
-                      <div className="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center">
-                        <Icon size={18} className="text-gray-500" />
-                      </div>
-                      <span className="text-[10px] text-gray-500 text-center leading-tight max-w-[80px]">{AGENT_LABELS[role]}</span>
-                    </div>
-                    {i < AGENT_ROLES.length - 1 && <ArrowRight size={14} className="text-gray-700 mt-[-16px]" />}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
         </div>
       )}
     </div>

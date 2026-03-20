@@ -16,12 +16,11 @@ router.post('/run', async (req, res) => {
   try {
     const userId = (req as any).user?.userId;
     const watchlist = req.body.watchlist as string[] | undefined;
-    // Run async - don't block the response
     const runId = await runFullPipeline(userId, watchlist);
-    res.json({ runId, message: 'Pipeline started' });
+    res.json({ runId, message: 'Pipeline completed' });
   } catch (error: any) {
     console.error('Agent run error:', error.message);
-    res.status(500).json({ error: 'Failed to start agent pipeline' });
+    res.status(500).json({ error: error.message || 'Failed to start agent pipeline' });
   }
 });
 
