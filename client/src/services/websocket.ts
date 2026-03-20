@@ -17,6 +17,9 @@ class WebSocketClient {
       // Production: derive WS URL from the API URL
       const wsBase = apiUrl.replace(/^http/, 'ws').replace(/\/api$/, '');
       url = `${wsBase}/ws?token=${token}`;
+    } else if (window.location.hostname !== 'localhost') {
+      // Deployed: connect to Railway WebSocket
+      url = `wss://crypto-saasserver-production.up.railway.app/ws?token=${token}`;
     } else {
       // Dev: same host
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';

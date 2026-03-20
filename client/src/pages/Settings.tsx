@@ -21,7 +21,8 @@ export default function Settings() {
   const [showCongrats, setShowCongrats] = useState(false);
   const [congratsTier, setCongratsTier] = useState('');
 
-  const API = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+  const RAILWAY_API = 'https://crypto-saasserver-production.up.railway.app/api';
+  const API = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : RAILWAY_API);
 
   useEffect(() => {
     if (!isAuthenticated) navigate('/login');

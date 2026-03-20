@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Key, Plus, Copy, Trash2, Check, ExternalLink, Shield, Zap, Globe } from 'lucide-react';
 
+const RAILWAY_API = 'https://crypto-saasserver-production.up.railway.app/api';
+const API_BASE = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? '/api' : RAILWAY_API);
+
 interface ApiKeyData {
   id: string;
   name: string;
@@ -46,7 +49,7 @@ export default function Integrations() {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('/api/api-keys', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api-keys', { headers: { Authorization: `Bearer ${token}` } });
       if (res.ok) {
         const data = await res.json();
         setApiKeys(data.data || []);
@@ -61,7 +64,7 @@ export default function Integrations() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/api-keys', {
+      const res = await fetch(`${API_BASE}/api-keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name: newKeyName }),
@@ -79,7 +82,7 @@ export default function Integrations() {
   const deleteKey = async (id: string) => {
     try {
       const token = localStorage.getItem('token');
-      await fetch(`/api/api-keys/${id}`, {
+      await fetch(`${API_BASE}/api-keys/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
