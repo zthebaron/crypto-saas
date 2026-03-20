@@ -384,6 +384,7 @@ export async function initDatabase(): Promise<DbLike> {
   // Ensure admin role for platform owners
   db.run("UPDATE users SET role = 'admin', tier = 'enterprise' WHERE email = 'thefirmla@gmail.com'");
   db.run("UPDATE users SET role = 'admin', tier = 'enterprise' WHERE email = 'timdevallee@gmail.com'");
+  db.run("UPDATE users SET role = 'admin', tier = 'enterprise' WHERE email = 'CEO@exora.group'");
 
   // Save initial state
   const data = db.export();
