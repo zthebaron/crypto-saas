@@ -9,7 +9,8 @@ import type {
 } from '@crypto-saas/shared';
 
 const RAILWAY_API = 'https://crypto-saasserver-production.up.railway.app/api';
-const API_BASE = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? '/api' : RAILWAY_API);
+// Use Vercel proxy (/api) for same-origin requests on deployed domains; fall back to Railway direct only if needed
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 const api = axios.create({ baseURL: API_BASE });
 
 // Attach JWT to every request
