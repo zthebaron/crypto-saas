@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/authMiddleware';
 import { createSubscription, createPayment } from '../models/adminModel';
+import { updateUserTier } from '../models/userModel';
+
+const PROMO_CODES: Record<string, { tier: 'platinum' | 'enterprise'; label: string }> = {
+  'SHWOOP': { tier: 'enterprise', label: 'Premium Enterprise' },
+};
 
 const router = Router();
 router.use(requireAuth);
@@ -56,6 +61,35 @@ router.get('/subscription', (req, res) => {
   const row = db.prepare('SELECT * FROM subscriptions WHERE user_id = ? ORDER BY created_at DESC LIMIT 1').get(req.user!.userId) as any;
   if (!row) { res.json({ data: null }); return; }
   res.json({ data: { id: row.id, plan: row.plan, status: row.status, paymentMethod: row.payment_method, currentPeriodEnd: row.current_period_end, cancelAtPeriodEnd: !!row.cancel_at_period_end } });
+});
+
+// Redeem promo code
+router.post('/redeem-code', (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) { res.status(400).json({ error: 'Promo code is required' }); return; }
+
+    const promo = PROMO_CODES[code.toUpperCase().trim()];
+    if (!promo) {
+      res.status(400).json({ error: 'Invalid promo code' });
+      return;
+    }
+
+    // Upgrade user tier
+    updateUserTier(req.user!.userId, promo.tier);
+
+    // Create a subscription record
+    const sub = createSubscription(req.user!.userId, promo.tier, 'promo');
+    createPayment(req.user!.userId, 0, 'promo', `promo_${code}_${Date.now()}`, sub.id);
+
+    res.json({
+      success: true,
+      tier: promo.tier,
+      message: `Promo code applied! You've been upgraded to ${promo.label}.`,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Cancel subscription

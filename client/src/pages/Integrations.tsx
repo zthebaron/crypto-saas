@@ -11,24 +11,24 @@ interface ApiKeyData {
 }
 
 const INTEGRATIONS = [
-  { name: 'Binance', desc: 'World\'s largest crypto exchange by volume', color: '#F0B90B', logo: 'B', category: 'Exchange' },
-  { name: 'Coinbase', desc: 'Trusted platform for buying, selling, and storing crypto', color: '#0052FF', logo: 'C', category: 'Exchange' },
-  { name: 'Kraken', desc: 'Secure crypto exchange with advanced trading features', color: '#5741D9', logo: 'K', category: 'Exchange' },
-  { name: 'KuCoin', desc: 'Global exchange with 700+ digital assets', color: '#23AF91', logo: 'K', category: 'Exchange' },
-  { name: 'OKX', desc: 'Leading exchange for crypto spot and derivatives', color: '#FFFFFF', logo: 'O', category: 'Exchange' },
-  { name: 'Bybit', desc: 'Fast-growing exchange with derivatives and spot trading', color: '#F7A600', logo: 'B', category: 'Exchange' },
-  { name: 'Gate.io', desc: 'Exchange with 1400+ cryptocurrencies and DeFi services', color: '#2354E6', logo: 'G', category: 'Exchange' },
-  { name: 'Bitget', desc: 'Copy trading and social trading platform', color: '#00F0FF', logo: 'B', category: 'Exchange' },
-  { name: 'TradingView', desc: 'Advanced charting and technical analysis platform', color: '#2962FF', logo: 'T', category: 'Analytics' },
-  { name: 'CoinMarketCap', desc: 'Market data, rankings, and price tracking', color: '#3861FB', logo: 'C', category: 'Data' },
-  { name: 'CoinGecko', desc: 'Independent crypto data aggregator', color: '#8BC53F', logo: 'C', category: 'Data' },
-  { name: 'DEX Screener', desc: 'Real-time DEX analytics and pair tracking', color: '#88D693', logo: 'D', category: 'Analytics' },
-  { name: 'Messari', desc: 'Crypto research, data, and tools for professionals', color: '#1652F0', logo: 'M', category: 'Research' },
-  { name: 'Glassnode', desc: 'On-chain market intelligence and analytics', color: '#1FBF92', logo: 'G', category: 'Analytics' },
-  { name: 'Chainalysis', desc: 'Blockchain data platform for compliance and investigation', color: '#FF5A00', logo: 'C', category: 'Compliance' },
-  { name: 'MetaMask', desc: 'Leading self-custody Web3 wallet', color: '#E2761B', logo: 'M', category: 'Wallet' },
-  { name: 'Phantom', desc: 'Multi-chain wallet for Solana, Ethereum, and more', color: '#AB9FF2', logo: 'P', category: 'Wallet' },
-  { name: 'Uniswap', desc: 'Largest decentralized exchange protocol', color: '#FF007A', logo: 'U', category: 'DeFi' },
+  { name: 'Binance', desc: 'World\'s largest crypto exchange by volume', color: '#F0B90B', logo: 'https://bin.bnbstatic.com/static/images/common/favicon.ico', category: 'Exchange' },
+  { name: 'Coinbase', desc: 'Trusted platform for buying, selling, and storing crypto', color: '#0052FF', logo: 'https://www.coinbase.com/favicon.ico', category: 'Exchange' },
+  { name: 'Kraken', desc: 'Secure crypto exchange with advanced trading features', color: '#5741D9', logo: 'https://assets-cms.kraken.com/images/51n36hrp/facade/favicon-32x32.png', category: 'Exchange' },
+  { name: 'KuCoin', desc: 'Global exchange with 700+ digital assets', color: '#23AF91', logo: 'https://assets.staticimg.com/cms/media/1lB3PkckFDyfxz6VudCEACGX8RA.png', category: 'Exchange' },
+  { name: 'OKX', desc: 'Leading exchange for crypto spot and derivatives', color: '#FFFFFF', logo: 'https://static.okx.com/cdn/assets/imgs/2112/F43E7E55E4C878AF.png', category: 'Exchange' },
+  { name: 'Bybit', desc: 'Fast-growing exchange with derivatives and spot trading', color: '#F7A600', logo: 'https://www.bybit.com/favicon.ico', category: 'Exchange' },
+  { name: 'Gate.io', desc: 'Exchange with 1400+ cryptocurrencies and DeFi services', color: '#2354E6', logo: 'https://www.gate.io/favicon.ico', category: 'Exchange' },
+  { name: 'Bitget', desc: 'Copy trading and social trading platform', color: '#00F0FF', logo: 'https://www.bitget.com/favicon.ico', category: 'Exchange' },
+  { name: 'TradingView', desc: 'Advanced charting and technical analysis platform', color: '#2962FF', logo: 'https://static.tradingview.com/static/images/favicon.ico', category: 'Analytics' },
+  { name: 'CoinMarketCap', desc: 'Market data, rankings, and price tracking', color: '#3861FB', logo: 'https://s2.coinmarketcap.com/static/cloud/img/favicon.ico', category: 'Data' },
+  { name: 'CoinGecko', desc: 'Independent crypto data aggregator', color: '#8BC53F', logo: 'https://static.coingecko.com/s/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png', category: 'Data' },
+  { name: 'DEX Screener', desc: 'Real-time DEX analytics and pair tracking', color: '#88D693', logo: 'https://dexscreener.com/favicon.png', category: 'Analytics' },
+  { name: 'Messari', desc: 'Crypto research, data, and tools for professionals', color: '#1652F0', logo: 'https://messari.io/favicon.ico', category: 'Research' },
+  { name: 'Glassnode', desc: 'On-chain market intelligence and analytics', color: '#1FBF92', logo: 'https://glassnode.com/favicon.ico', category: 'Analytics' },
+  { name: 'Chainalysis', desc: 'Blockchain data platform for compliance and investigation', color: '#FF5A00', logo: 'https://www.chainalysis.com/favicon.ico', category: 'Compliance' },
+  { name: 'MetaMask', desc: 'Leading self-custody Web3 wallet', color: '#E2761B', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg', category: 'Wallet' },
+  { name: 'Phantom', desc: 'Multi-chain wallet for Solana, Ethereum, and more', color: '#AB9FF2', logo: 'https://phantom.app/favicon.ico', category: 'Wallet' },
+  { name: 'Uniswap', desc: 'Largest decentralized exchange protocol', color: '#FF007A', logo: 'https://app.uniswap.org/favicon.png', category: 'DeFi' },
 ];
 
 export default function Integrations() {
@@ -227,9 +227,19 @@ export default function Integrations() {
           {filteredIntegrations.map((integration) => (
             <div key={integration.name} className="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors group">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold flex-shrink-0"
-                  style={{ backgroundColor: integration.color + '20', color: integration.color }}>
-                  {integration.logo}
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden bg-gray-800"
+                  style={{ backgroundColor: integration.color + '15' }}>
+                  <img
+                    src={integration.logo}
+                    alt={integration.name}
+                    className="w-8 h-8 object-contain"
+                    onError={(e) => {
+                      // Fallback to first letter if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.parentElement!.innerHTML = `<span style="color:${integration.color};font-size:1.25rem;font-weight:700">${integration.name[0]}</span>`;
+                    }}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">

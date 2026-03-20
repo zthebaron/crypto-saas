@@ -1,8 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { config } from '../config';
-import { createUser, findUserByEmail, findUserById } from '../models/userModel';
+import { createUser, findUserByEmail, findUserById, updateUserPassword } from '../models/userModel';
 import type { User } from '@crypto-saas/shared';
+
+// In-memory reset token store (tokens expire after 1 hour)
+const resetTokens = new Map<string, { userId: string; email: string; expiresAt: number }>();
 
 export interface TokenPayload {
   userId: string;
@@ -56,4 +60,47 @@ export async function login(email: string, password: string): Promise<{ user: Us
 
 export function getProfile(userId: string): User | undefined {
   return findUserById(userId);
+}
+
+export function requestPasswordReset(email: string): { token: string; message: string } {
+  const user = findUserByEmail(email);
+  if (!user) {
+    // Don't reveal whether email exists — always return success message
+    return { token: '', message: 'If an account with that email exists, a reset link has been generated.' };
+  }
+
+  const token = crypto.randomBytes(32).toString('hex');
+  resetTokens.set(token, {
+    userId: user.id,
+    email: user.email,
+    expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour
+  });
+
+  // Clean up expired tokens
+  for (const [key, val] of resetTokens.entries()) {
+    if (val.expiresAt < Date.now()) resetTokens.delete(key);
+  }
+
+  return { token, message: 'If an account with that email exists, a reset link has been generated.' };
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<{ user: User; token: string }> {
+  const entry = resetTokens.get(token);
+  if (!entry) throw new Error('Invalid or expired reset token');
+  if (entry.expiresAt < Date.now()) {
+    resetTokens.delete(token);
+    throw new Error('Reset token has expired');
+  }
+
+  if (newPassword.length < 8) throw new Error('Password must be at least 8 characters');
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  updateUserPassword(entry.userId, passwordHash);
+  resetTokens.delete(token);
+
+  const user = findUserById(entry.userId);
+  if (!user) throw new Error('User not found');
+
+  const authToken = generateToken(user);
+  return { user, token: authToken };
 }

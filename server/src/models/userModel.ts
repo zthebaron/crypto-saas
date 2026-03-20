@@ -43,3 +43,8 @@ export function updateUserTier(id: string, tier: User['tier']): void {
   const db = getDb();
   db.prepare('UPDATE users SET tier = ?, updated_at = datetime(\'now\') WHERE id = ?').run(tier, id);
 }
+
+export function updateUserPassword(id: string, passwordHash: string): void {
+  const db = getDb();
+  db.prepare("UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?").run(passwordHash, id);
+}
