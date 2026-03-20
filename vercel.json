@@ -4,6 +4,8 @@
   "buildCommand": "cd client && npx vite build",
   "outputDirectory": "client/dist",
   "rewrites": [
-    { "source": "/((?!assets|favicon).*)", "destination": "/index.html" }
+    { "source": "/api/:path*", "destination": "https://crypto-saasserver-production.up.railway.app/api/:path*" },
+    { "source": "/ws", "destination": "https://crypto-saasserver-production.up.railway.app/ws" },
+    { "source": "/((?!api|assets|favicon).*)", "destination": "/index.html" }
   ]
 }
