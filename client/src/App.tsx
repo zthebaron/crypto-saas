@@ -38,6 +38,14 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 
 const queryClient = new QueryClient();
 
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const user = useAuthStore((s) => s.user);
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+}
+
 function AdminGuard({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user);
   if (!user || user.role !== 'admin') {
@@ -88,7 +96,7 @@ function AppInner() {
         <Route path="/signals" element={<Signals />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/compare" element={<Compare />} />
-        <Route path="/knowledge" element={<KnowledgeBase />} />
+        <Route path="/knowledge" element={<AuthGuard><KnowledgeBase /></AuthGuard>} />
         <Route path="/rules" element={<AlertRules />} />
         <Route path="/accuracy" element={<Accuracy />} />
         <Route path="/watchlist" element={<Watchlist />} />
@@ -100,9 +108,9 @@ function AppInner() {
         <Route path="/usage-policy" element={<UsagePolicy />} />
         <Route path="/integrations" element={<Integrations />} />
         <Route path="/trade" element={<Trade />} />
-        <Route path="/brand" element={<BrandKit />} />
+        <Route path="/brand" element={<AuthGuard><BrandKit /></AuthGuard>} />
         <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
       </Route>
     </Routes>
   );

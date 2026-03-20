@@ -20,7 +20,7 @@ const navItems = [
   { to: '/trade', icon: ArrowLeftRight, label: 'Trade' },
   { to: '/portfolio', icon: Briefcase, label: 'Portfolio' },
   { to: '/compare', icon: GitCompareArrows, label: 'Compare' },
-  { to: '/knowledge', icon: BookOpen, label: 'Knowledge Base' },
+  { to: '/knowledge', icon: BookOpen, label: 'Knowledge Base', authOnly: true },
   { to: '/rules', icon: ShieldAlert, label: 'Alert Rules' },
   { to: '/accuracy', icon: Target, label: 'Accuracy' },
   { to: '/watchlist', icon: Star, label: 'Watchlist' },
@@ -28,9 +28,9 @@ const navItems = [
   { to: '/pricing', icon: CreditCard, label: 'Pricing' },
   { to: '/about', icon: Info, label: 'About Us' },
   { to: '/integrations', icon: Plug, label: 'Integrations' },
-  { to: '/brand', icon: Palette, label: 'Brand Kit' },
+  { to: '/brand', icon: Palette, label: 'Brand Kit', authOnly: true },
   { to: '/admin', icon: ShieldCheck, label: 'Admin', adminOnly: true },
-  { to: '/settings', icon: Settings, label: 'Settings' },
+  { to: '/settings', icon: Settings, label: 'Settings', authOnly: true },
 ] as const;
 
 export function Sidebar() {
@@ -38,10 +38,12 @@ export function Sidebar() {
   const { user, logout } = useAuthStore();
   const { collapsed, mobileOpen, toggleCollapsed, setMobileOpen } = useSidebarStore();
 
-  // Filter admin-only items for non-admin users
-  const visibleNavItems = navItems.filter(item =>
-    !('adminOnly' in item && item.adminOnly) || user?.role === 'admin'
-  );
+  // Filter items based on auth state and role
+  const visibleNavItems = navItems.filter(item => {
+    if ('adminOnly' in item && item.adminOnly) return user?.role === 'admin';
+    if ('authOnly' in item && item.authOnly) return !!user;
+    return true;
+  });
 
   const sidebarWidth = collapsed ? 'w-[72px]' : 'w-64';
 
