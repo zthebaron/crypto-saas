@@ -72,7 +72,7 @@ export interface User {
   email: string;
   displayName: string;
   role?: 'user' | 'admin';
-  tier: 'free' | 'pro' | 'premium';
+  tier: 'free' | 'pro' | 'premium' | 'platinum' | 'enterprise';
   createdAt: string;
 }
 

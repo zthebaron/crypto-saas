@@ -49,7 +49,7 @@ export default function Integrations() {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch(`${API_BASE}/api-keys', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api-keys`, { headers: { Authorization: `Bearer ${token}` } });
       if (res.ok) {
         const data = await res.json();
         setApiKeys(data.data || []);
@@ -64,7 +64,7 @@ export default function Integrations() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`${API_BASE}/api-keys', {
+      const res = await fetch(`${API_BASE}/api-keys`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name: newKeyName }),
