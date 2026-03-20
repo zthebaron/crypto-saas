@@ -33,6 +33,7 @@ import Privacy from './pages/Privacy';
 import UsagePolicy from './pages/UsagePolicy';
 import Integrations from './pages/Integrations';
 import Trade from './pages/Trade';
+import BrandKit from './pages/BrandKit';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 const queryClient = new QueryClient();
@@ -91,6 +92,7 @@ function AppInner() {
         <Route path="/usage-policy" element={<UsagePolicy />} />
         <Route path="/integrations" element={<Integrations />} />
         <Route path="/trade" element={<Trade />} />
+        <Route path="/brand" element={<BrandKit />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/settings" element={<Settings />} />
       </Route>

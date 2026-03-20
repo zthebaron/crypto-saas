@@ -1,0 +1,25 @@
+<svg width="400" height="100" viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="100" rx="8" fill="#111827"/>
+  <defs>
+    <linearGradient id="bv-shield-d" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C0C0C0" />
+      <stop offset="50%" stop-color="#E8E8E8" />
+      <stop offset="100%" stop-color="#808080" />
+    </linearGradient>
+    <linearGradient id="bv-arrow-d" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9CA3AF" />
+      <stop offset="100%" stop-color="#F3F4F6" />
+    </linearGradient>
+    <linearGradient id="text-grad-d" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F3F4F6" />
+      <stop offset="50%" stop-color="#D1D5DB" />
+      <stop offset="100%" stop-color="#9CA3AF" />
+    </linearGradient>
+  </defs>
+  <path d="M42 6L66 18V40L42 62L18 40V18L42 6Z" stroke="url(#bv-shield-d)" stroke-width="2.5" fill="none" opacity="0.8"/>
+  <path d="M28 20H38C41 20 43 22 43 25C43 27 41.5 28.5 40 29C42 29.5 44 31 44 34C44 37 41.5 39 38.5 39H28V20ZM33 27H37C38.5 27 39.5 26 39.5 25C39.5 23.5 38.5 23 37 23H33V27ZM33 36H38C39.5 36 40.5 35 40.5 33.5C40.5 32 39.5 31 38 31H33V36Z" fill="url(#bv-shield-d)"/>
+  <path d="M40 42L48 30L54 34L62 18" stroke="url(#bv-arrow-d)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M58 16L64 17L61 22Z" fill="url(#bv-arrow-d)"/>
+  <text x="90" y="45" fill="url(#text-grad-d)" font-family="Inter, Segoe UI, sans-serif" font-weight="700" font-size="36" letter-spacing="4">BLOCKVIEW</text>
+  <text x="92" y="62" fill="#6B7280" font-family="Inter, Segoe UI, sans-serif" font-weight="400" font-size="11" letter-spacing="4">CRYPTO INSIGHTS &amp; ANALYSIS</text>
+</svg>

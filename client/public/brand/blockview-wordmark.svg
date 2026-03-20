@@ -1,0 +1,11 @@
+<svg width="300" height="50" viewBox="0 0 300 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F3F4F6" />
+      <stop offset="50%" stop-color="#D1D5DB" />
+      <stop offset="100%" stop-color="#9CA3AF" />
+    </linearGradient>
+  </defs>
+  <text x="0" y="32" fill="url(#wm-grad)" font-family="Inter, Segoe UI, sans-serif" font-weight="700" font-size="36" letter-spacing="4">BLOCKVIEW</text>
+  <text x="2" y="47" fill="#6B7280" font-family="Inter, Segoe UI, sans-serif" font-weight="400" font-size="11" letter-spacing="4">CRYPTO INSIGHTS &amp; ANALYSIS</text>
+</svg>
