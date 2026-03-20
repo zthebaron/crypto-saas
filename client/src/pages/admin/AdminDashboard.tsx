@@ -39,11 +39,15 @@ interface PaymentData {
   createdAt: string;
 }
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
 const api = (path: string, opts?: RequestInit) => {
   const token = localStorage.getItem('token');
-  return fetch(`/api/admin${path}`, {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json', ...opts?.headers as Record<string, string> };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  return fetch(`${API_BASE}/admin${path}`, {
     ...opts,
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, ...opts?.headers },
+    headers,
   }).then(r => r.json());
 };
 
@@ -59,7 +63,7 @@ export default function AdminDashboard() {
   const [actionMenu, setActionMenu] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStats = () => api('/stats').then(r => setStats(r.data)).catch(() => setError('Failed to load admin data. You may not have admin privileges.'));
+  const fetchStats = () => api('/stats').then(r => setStats(r.data)).catch(() => setError('Failed to load admin data. Please check your connection.'));
   const fetchUsers = () => api(`/users?page=${page}&limit=15&search=${search}&filter=${filter}`).then(r => { setUsers(r.data?.users || []); setTotalUsers(r.data?.total || 0); }).catch(() => {});
   const fetchPayments = () => api(`/payments?page=1&limit=20`).then(r => setPayments(r.data?.payments || [])).catch(() => {});
 

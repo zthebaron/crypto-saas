@@ -1,13 +1,12 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/authMiddleware';
-import { requireAdmin } from '../middleware/adminMiddleware';
+import { optionalAuth } from '../middleware/authMiddleware';
 import * as adminModel from '../models/adminModel';
 import { updateUserTier } from '../models/userModel';
 
 const router = Router();
 
-router.use(requireAuth);
-router.use(requireAdmin);
+// Admin dashboard is open-access for now (no auth/role check)
+router.use(optionalAuth);
 
 // Dashboard stats
 router.get('/stats', (req, res) => {
@@ -47,7 +46,7 @@ router.put('/users/:id/tier', (req, res) => {
 });
 
 router.delete('/users/:id', (req, res) => {
-  if (req.params.id === req.user!.userId) { res.status(400).json({ error: 'Cannot delete yourself' }); return; }
+  if (req.user && req.params.id === req.user.userId) { res.status(400).json({ error: 'Cannot delete yourself' }); return; }
   adminModel.deleteUser(req.params.id);
   res.json({ success: true });
 });
