@@ -24,6 +24,7 @@ const pageTitles: Record<string, string> = {
   '/usage-policy': 'Usage Policy',
   '/integrations': 'Integrations',
   '/trade': 'Trade',
+  '/screener': 'DEX Screener',
   '/brand': 'Brand Kit',
   '/admin': 'Admin Dashboard',
   '/settings': 'Settings',
@@ -33,6 +34,7 @@ export function Layout() {
   const location = useLocation();
   const title = pageTitles[location.pathname] || 'BlockView';
   const collapsed = useSidebarStore((s) => s.collapsed);
+  const isFullFrame = location.pathname === '/screener';
 
   // Desktop: margin matches sidebar width. Mobile: no margin (sidebar is overlay)
   const marginClass = collapsed ? 'lg:ml-[72px]' : 'lg:ml-64';
@@ -42,10 +44,10 @@ export function Layout() {
       <Sidebar />
       <div className={`ml-0 ${marginClass} transition-all duration-200`}>
         <Header title={title} />
-        <main className="p-4 md:p-6">
+        <main className={isFullFrame ? '' : 'p-4 md:p-6'}>
           <Outlet />
         </main>
-        <Footer />
+        {!isFullFrame && <Footer />}
       </div>
       <ChatWidget />
     </div>

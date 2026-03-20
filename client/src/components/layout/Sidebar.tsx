@@ -3,7 +3,7 @@ import {
   LayoutDashboard, BarChart3, Bot, Zap, Star, Settings, LogOut,
   Briefcase, GitCompareArrows, BookOpen, ShieldAlert, Target,
   CreditCard, Info, Newspaper, Plug, ShieldCheck, ArrowLeftRight, Palette,
-  PanelLeftClose, PanelLeftOpen, X,
+  PanelLeftClose, PanelLeftOpen, X, Monitor,
 } from 'lucide-react';
 import { useAgentStore } from '../../store/agentStore';
 import { useAuthStore } from '../../store/authStore';
@@ -18,6 +18,7 @@ const navItems = [
   { to: '/agents', icon: Bot, label: 'Agent Reports' },
   { to: '/signals', icon: Zap, label: 'Signals' },
   { to: '/trade', icon: ArrowLeftRight, label: 'Trade' },
+  { to: '/screener', icon: Monitor, label: 'DEX Screener' },
   { to: '/portfolio', icon: Briefcase, label: 'Portfolio' },
   { to: '/compare', icon: GitCompareArrows, label: 'Compare' },
   { to: '/knowledge', icon: BookOpen, label: 'Knowledge Base', authOnly: true },
