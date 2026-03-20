@@ -21,6 +21,8 @@ const pageTitles: Record<string, string> = {
   '/terms': 'Terms of Service',
   '/privacy': 'Privacy Policy',
   '/usage-policy': 'Usage Policy',
+  '/integrations': 'Integrations',
+  '/admin': 'Admin Dashboard',
   '/settings': 'Settings',
 };
 

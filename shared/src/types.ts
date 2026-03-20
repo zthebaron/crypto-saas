@@ -268,3 +268,64 @@ export interface CoinComparison {
   coins: CoinData[];
   signals: Record<string, Signal[]>;
 }
+
+// --- Admin ---
+export interface AdminUser extends User {
+  role: 'user' | 'admin';
+  status: 'active' | 'suspended' | 'banned';
+  lastLoginAt: string | null;
+  totalRuns: number;
+  subscriptionId: string | null;
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  activeUsers: number;
+  totalRevenue: number;
+  monthlyRevenue: number;
+  totalRuns: number;
+  freeUsers: number;
+  platinumUsers: number;
+  enterpriseUsers: number;
+  recentSignups: number;
+}
+
+export interface Subscription {
+  id: string;
+  userId: string;
+  plan: 'free' | 'platinum' | 'enterprise';
+  status: 'active' | 'canceled' | 'past_due' | 'trialing';
+  paymentMethod: 'stripe' | 'paypal' | 'crypto' | 'none';
+  stripeSubscriptionId: string | null;
+  paypalSubscriptionId: string | null;
+  cryptoWalletAddress: string | null;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Payment {
+  id: string;
+  userId: string;
+  subscriptionId: string | null;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  paymentMethod: 'stripe' | 'paypal' | 'crypto';
+  transactionId: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+// --- Integrations ---
+export interface ApiKey {
+  id: string;
+  userId: string;
+  name: string;
+  key: string;
+  lastUsedAt: string | null;
+  expiresAt: string | null;
+  createdAt: string;
+}

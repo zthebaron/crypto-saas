@@ -26,6 +26,8 @@ import News from './pages/News';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import UsagePolicy from './pages/UsagePolicy';
+import Integrations from './pages/Integrations';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function AppInner() {
   const { updateAgentStatus, setPipelineRunning, fetchTopSignals, fetchRuns } = useAgentStore();
@@ -77,6 +79,8 @@ function AppInner() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/usage-policy" element={<UsagePolicy />} />
+        <Route path="/integrations" element={<Integrations />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
     </Routes>

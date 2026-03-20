@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, BarChart3, Bot, Zap, Star, Settings, LogOut,
   Briefcase, GitCompareArrows, BookOpen, ShieldAlert, Target,
-  CreditCard, Info, Newspaper,
+  CreditCard, Info, Newspaper, Plug, ShieldCheck,
 } from 'lucide-react';
 import { useAgentStore } from '../../store/agentStore';
 import { useAuthStore } from '../../store/authStore';
@@ -24,6 +24,8 @@ const navItems = [
   { to: '/news', icon: Newspaper, label: 'News' },
   { to: '/pricing', icon: CreditCard, label: 'Pricing' },
   { to: '/about', icon: Info, label: 'About Us' },
+  { to: '/integrations', icon: Plug, label: 'Integrations' },
+  { to: '/admin', icon: ShieldCheck, label: 'Admin' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 

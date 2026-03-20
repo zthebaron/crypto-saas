@@ -1,9 +1,20 @@
-import { Play, RefreshCw } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Play, RefreshCw, Sun, Moon, ExternalLink, ChevronDown } from 'lucide-react';
 import { useMarketStore } from '../../store/marketStore';
 import { useAgentStore } from '../../store/agentStore';
+import { useThemeStore } from '../../store/themeStore';
 import { PriceChange } from '../ui/PriceChange';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { NotificationBell } from '../notifications/NotificationBell';
+
+const RESEARCH_LINKS = [
+  { name: 'TradingView', url: 'https://www.tradingview.com', color: '#2962FF' },
+  { name: 'CoinMarketCap', url: 'https://coinmarketcap.com', color: '#17181B' },
+  { name: 'DEX Screener', url: 'https://dexscreener.com', color: '#1C1C28' },
+  { name: 'CoinGecko', url: 'https://www.coingecko.com', color: '#8BC53F' },
+  { name: 'Messari', url: 'https://messari.io', color: '#1652F0' },
+  { name: 'Glassnode', url: 'https://glassnode.com', color: '#1FBF92' },
+];
 
 function formatUsd(n: number): string {
   if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T';
@@ -15,15 +26,28 @@ export function Header({ title }: { title: string }) {
   const globalMetrics = useMarketStore((s) => s.globalMetrics);
   const { triggerRun, pipelineRunning } = useAgentStore();
   const fetchAll = useMarketStore((s) => s.fetchAll);
+  const { theme, toggleTheme } = useThemeStore();
+  const [showResearch, setShowResearch] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowResearch(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="h-16 bg-gray-900/80 backdrop-blur border-b border-gray-800 flex items-center justify-between px-6">
       <h2 className="text-lg font-semibold text-gray-100">{title}</h2>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4">
         {/* Global ticker */}
         {globalMetrics && (
-          <div className="hidden lg:flex items-center gap-5 text-xs text-gray-400">
+          <div className="hidden xl:flex items-center gap-5 text-xs text-gray-400">
             <div>
               <span className="text-gray-500">Mkt Cap</span>{' '}
               <span className="text-gray-200">{formatUsd(globalMetrics.totalMarketCap)}</span>
@@ -38,6 +62,47 @@ export function Header({ title }: { title: string }) {
             </div>
           </div>
         )}
+
+        {/* Research Links Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setShowResearch(!showResearch)}
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-200 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <ExternalLink size={12} />
+            <span className="hidden md:inline">Research</span>
+            <ChevronDown size={10} className={`transition-transform ${showResearch ? 'rotate-180' : ''}`} />
+          </button>
+
+          {showResearch && (
+            <div className="absolute right-0 top-full mt-2 w-56 bg-gray-900 border border-gray-800 rounded-xl shadow-xl shadow-black/30 py-2 z-50">
+              <p className="px-3 py-1.5 text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Research & Trading</p>
+              {RESEARCH_LINKS.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+                  onClick={() => setShowResearch(false)}
+                >
+                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: link.color }} />
+                  {link.name}
+                  <ExternalLink size={10} className="ml-auto text-gray-600" />
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 text-gray-400 hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-800"
+          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+        >
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
 
         <NotificationBell />
 

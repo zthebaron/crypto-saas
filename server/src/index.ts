@@ -21,6 +21,9 @@ import compareRoutes from './routes/compareRoutes';
 import documentRoutes from './routes/documentRoutes';
 import alertRuleRoutes from './routes/alertRuleRoutes';
 import accuracyRoutes from './routes/accuracyRoutes';
+import adminRoutes from './routes/adminRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+import apiKeyRoutes from './routes/apiKeyRoutes';
 import type { WsEvent } from '@crypto-saas/shared';
 import { verifyToken } from './services/authService';
 
@@ -56,6 +59,9 @@ app.use('/api/compare', compareRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/rules', alertRuleRoutes);
 app.use('/api/accuracy', accuracyRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/api-keys', apiKeyRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

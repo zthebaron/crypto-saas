@@ -112,6 +112,9 @@ export async function initDatabase(): Promise<DbLike> {
       password_hash TEXT NOT NULL,
       display_name TEXT NOT NULL,
       tier TEXT DEFAULT 'free',
+      role TEXT NOT NULL DEFAULT 'user',
+      status TEXT NOT NULL DEFAULT 'active',
+      last_login_at TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     )
@@ -306,6 +309,55 @@ export async function initDatabase(): Promise<DbLike> {
       evaluated_at TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       FOREIGN KEY (signal_id) REFERENCES signals(id)
+    )
+  `);
+
+  // --- Subscriptions ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id),
+      plan TEXT NOT NULL DEFAULT 'free',
+      status TEXT NOT NULL DEFAULT 'active',
+      payment_method TEXT NOT NULL DEFAULT 'none',
+      stripe_subscription_id TEXT,
+      paypal_subscription_id TEXT,
+      crypto_wallet_address TEXT,
+      current_period_start TEXT NOT NULL,
+      current_period_end TEXT NOT NULL,
+      cancel_at_period_end INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
+  // --- Payments ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS payments (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id),
+      subscription_id TEXT REFERENCES subscriptions(id),
+      amount REAL NOT NULL,
+      currency TEXT NOT NULL DEFAULT 'USD',
+      status TEXT NOT NULL DEFAULT 'pending',
+      payment_method TEXT NOT NULL,
+      transaction_id TEXT,
+      metadata TEXT DEFAULT '{}',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
+  // --- API Keys ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS api_keys (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id),
+      name TEXT NOT NULL,
+      key_hash TEXT NOT NULL,
+      key_prefix TEXT NOT NULL,
+      last_used_at TEXT,
+      expires_at TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
     )
   `);
 
