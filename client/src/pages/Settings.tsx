@@ -4,7 +4,7 @@ import { Card } from '../components/ui/Card';
 import { SUBSCRIPTION_TIERS } from '@crypto-saas/shared';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Shield, Zap, Crown, Tag, CheckCircle, ArrowRight } from 'lucide-react';
+import { Shield, Zap, Crown, Tag, CheckCircle, ArrowRight, Sparkles, X } from 'lucide-react';
 
 const tierIcons = { free: Shield, pro: Zap, premium: Crown };
 const tierColors = { free: 'text-gray-400', pro: 'text-indigo-400', premium: 'text-yellow-400' };
@@ -18,6 +18,8 @@ export default function Settings() {
   const [promoError, setPromoError] = useState('');
   const [promoSuccess, setPromoSuccess] = useState('');
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [showCongrats, setShowCongrats] = useState(false);
+  const [congratsTier, setCongratsTier] = useState('');
 
   const API = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -52,6 +54,9 @@ export default function Settings() {
       // Update user tier locally
       updateUser({ ...user, tier: data.tier });
       setPromoCode('');
+      // Show congratulations splash
+      setCongratsTier(data.tier);
+      setShowCongrats(true);
     } catch (err: any) {
       setPromoError(err.message || 'Failed to redeem code');
     }
@@ -229,6 +234,107 @@ export default function Settings() {
           Sign Out
         </button>
       </Card>
+
+      {/* Congratulations Splash Overlay */}
+      {showCongrats && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="relative max-w-md w-full mx-4">
+            {/* Close button */}
+            <button
+              onClick={() => setShowCongrats(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white z-10 p-1"
+            >
+              <X size={20} />
+            </button>
+
+            {/* Main card */}
+            <div className="bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 border border-yellow-500/30 rounded-3xl p-8 text-center shadow-2xl shadow-yellow-500/10">
+              {/* Animated sparkle ring */}
+              <div className="relative w-24 h-24 mx-auto mb-6">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 animate-spin" style={{ animationDuration: '3s' }} />
+                <div className="absolute inset-[3px] rounded-full bg-gray-900 flex items-center justify-center">
+                  <Crown size={36} className="text-yellow-400 animate-pulse" />
+                </div>
+              </div>
+
+              {/* Confetti particles */}
+              <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-2 h-2 rounded-full animate-confetti"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `-5%`,
+                      backgroundColor: ['#FFD700', '#FF6B6B', '#4ECDC4', '#A78BFA', '#F97316', '#22D3EE'][i % 6],
+                      animationDelay: `${Math.random() * 2}s`,
+                      animationDuration: `${2 + Math.random() * 2}s`,
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Sparkles size={20} className="text-yellow-400" />
+                <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-500">
+                  Congratulations!
+                </h2>
+                <Sparkles size={20} className="text-yellow-400" />
+              </div>
+
+              <p className="text-gray-300 text-sm mb-4">
+                Your promo code has been successfully redeemed!
+              </p>
+
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-6">
+                <p className="text-xs text-yellow-400/70 uppercase tracking-wider font-medium mb-1">You've been upgraded to</p>
+                <p className="text-2xl font-bold text-yellow-400 capitalize">
+                  {congratsTier === 'enterprise' ? 'Premium Enterprise' : congratsTier === 'platinum' ? 'Platinum' : congratsTier} Plan
+                </p>
+                <p className="text-xs text-gray-400 mt-2">Unlimited agent runs, priority support, and all premium features unlocked.</p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                {[
+                  { icon: Zap, label: 'Unlimited Runs', color: 'text-blue-400' },
+                  { icon: Shield, label: 'Priority Access', color: 'text-green-400' },
+                  { icon: Crown, label: 'All Features', color: 'text-yellow-400' },
+                ].map(({ icon: Icon, label, color }) => (
+                  <div key={label} className="bg-gray-800/50 rounded-lg p-3">
+                    <Icon size={18} className={`${color} mx-auto mb-1`} />
+                    <p className="text-[10px] text-gray-400 font-medium">{label}</p>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setShowCongrats(false)}
+                className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-bold py-3 rounded-xl transition-all text-sm"
+              >
+                Start Exploring
+              </button>
+            </div>
+          </div>
+
+          {/* CSS for animations */}
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            .animate-fadeIn {
+              animation: fadeIn 0.3s ease-out;
+            }
+            @keyframes confetti {
+              0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+              100% { transform: translateY(500px) rotate(720deg); opacity: 0; }
+            }
+            .animate-confetti {
+              animation: confetti 3s ease-in infinite;
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }
