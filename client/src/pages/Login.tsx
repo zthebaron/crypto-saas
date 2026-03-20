@@ -20,9 +20,9 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-crypto-dark flex items-center justify-center">
       <div className="w-full max-w-md">
-        <div className="flex justify-center mb-8">
+        <Link to="/" className="flex justify-center mb-8 cursor-pointer">
           <BlockViewLogo size="lg" showText={true} showSubtext={true} />
-        </div>
+        </Link>
 
         <div className="card">
           <h2 className="text-xl font-semibold text-gray-100 mb-6">Sign In</h2>

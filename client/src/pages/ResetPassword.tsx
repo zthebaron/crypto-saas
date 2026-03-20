@@ -54,9 +54,9 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen bg-crypto-dark flex items-center justify-center">
         <div className="w-full max-w-md">
-          <div className="flex justify-center mb-8">
+          <Link to="/" className="flex justify-center mb-8 cursor-pointer">
             <BlockViewLogo size="lg" showText={true} showSubtext={true} />
-          </div>
+          </Link>
           <div className="card text-center">
             <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertTriangle size={32} className="text-red-400" />
