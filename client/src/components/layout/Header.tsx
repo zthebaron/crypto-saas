@@ -7,6 +7,7 @@ import { PriceChange } from '../ui/PriceChange';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { agents as agentsApi } from '../../services/api';
+import { ConnectWallet } from '../wallet/ConnectWallet';
 
 const SCHEDULE_OPTIONS = [
   { value: 'off', label: 'Manual Only' },
@@ -130,6 +131,8 @@ export function Header({ title }: { title: string }) {
         >
           {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
+
+        <ConnectWallet />
 
         <NotificationBell />
 

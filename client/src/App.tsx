@@ -1,11 +1,14 @@
 import { useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { WagmiProvider } from 'wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Layout } from './components/layout/Layout';
 import { useAuthStore } from './store/authStore';
 import { useAgentStore } from './store/agentStore';
 import { useNotificationStore } from './store/notificationStore';
 import { wsClient } from './services/websocket';
 import { useWebSocket } from './hooks/useWebSocket';
+import { wagmiConfig } from './config/wagmi';
 
 import Overview from './pages/Overview';
 import MarketData from './pages/MarketData';
@@ -29,7 +32,10 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import UsagePolicy from './pages/UsagePolicy';
 import Integrations from './pages/Integrations';
+import Trade from './pages/Trade';
 import AdminDashboard from './pages/admin/AdminDashboard';
+
+const queryClient = new QueryClient();
 
 function AppInner() {
   const { updateAgentStatus, setPipelineRunning, fetchTopSignals, fetchRuns } = useAgentStore();
@@ -84,6 +90,7 @@ function AppInner() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/usage-policy" element={<UsagePolicy />} />
         <Route path="/integrations" element={<Integrations />} />
+        <Route path="/trade" element={<Trade />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
@@ -101,8 +108,12 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <AppInner />
-    </BrowserRouter>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AppInner />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }

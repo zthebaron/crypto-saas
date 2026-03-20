@@ -347,6 +347,26 @@ export async function initDatabase(): Promise<DbLike> {
     )
   `);
 
+  // --- Trades ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS trades (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id),
+      chain_id INTEGER NOT NULL,
+      token_in TEXT NOT NULL,
+      token_out TEXT NOT NULL,
+      amount_in TEXT NOT NULL,
+      amount_out TEXT DEFAULT '',
+      tx_hash TEXT NOT NULL,
+      status TEXT DEFAULT 'confirmed',
+      signal_id TEXT,
+      dex_used TEXT DEFAULT '',
+      gas_paid TEXT DEFAULT '',
+      slippage REAL DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
   // --- API Keys ---
   db.run(`
     CREATE TABLE IF NOT EXISTS api_keys (
@@ -380,6 +400,7 @@ export async function initDatabase(): Promise<DbLike> {
   db.run('CREATE INDEX IF NOT EXISTS idx_alert_rules_enabled ON alert_rules(enabled)');
   db.run('CREATE INDEX IF NOT EXISTS idx_outcomes_signal ON signal_outcomes(signal_id)');
   db.run('CREATE INDEX IF NOT EXISTS idx_outcomes_agent ON signal_outcomes(agent_role)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_trades_user ON trades(user_id)');
 
   // Ensure admin role for platform owners
   db.run("UPDATE users SET role = 'admin', tier = 'enterprise' WHERE email = 'thefirmla@gmail.com'");

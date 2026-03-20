@@ -226,3 +226,15 @@ export const accuracy = {
   getSignalOutcome: (signalId: string) =>
     api.get<{ data: SignalOutcome }>(`/accuracy/signals/${signalId}`).then(r => r.data.data),
 };
+
+// --- Trade ---
+export const trade = {
+  getQuote: (params: { chainId: number; fromToken: string; toToken: string; amount: string; slippage?: number; userAddress?: string }) =>
+    api.post('/trade/quote', params).then(r => r.data),
+  recordTrade: (params: { chainId: number; tokenIn: string; tokenOut: string; amountIn: string; amountOut?: string; txHash: string; signalId?: string; dexUsed?: string; gasPaid?: string; slippage?: number }) =>
+    api.post('/trade/record', params).then(r => r.data),
+  getHistory: () =>
+    api.get<{ data: any[] }>('/trade/history').then(r => r.data.data),
+  getChains: () =>
+    api.get<{ data: number[] }>('/trade/chains').then(r => r.data.data),
+};
