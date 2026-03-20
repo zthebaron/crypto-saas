@@ -34,9 +34,9 @@ export function Sidebar() {
   return (
     <aside className="w-64 h-screen bg-gray-900 border-r border-gray-800 flex flex-col fixed left-0 top-0 z-30">
       {/* Logo */}
-      <div className="p-5 border-b border-gray-800">
+      <NavLink to="/" className="block p-5 border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
         <BlockViewLogo size="md" showText={true} showSubtext={true} />
-      </div>
+      </NavLink>
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
