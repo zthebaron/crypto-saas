@@ -159,7 +159,7 @@ export default function UsagePolicy() {
             <li>Keep your login credentials secure and do not share them</li>
             <li>Use strong, unique passwords for your BlockView account</li>
             <li>Log out of shared or public devices after use</li>
-            <li>Report any suspected security breaches immediately to <a href="mailto:security@blockview.com" className="text-indigo-400">security@blockview.com</a></li>
+            <li>Report any suspected security breaches immediately to <a href="mailto:security@block-view.app" className="text-indigo-400">security@block-view.app</a></li>
             <li>Ensure uploaded documents comply with applicable laws and do not contain malicious content</li>
           </ul>
 
@@ -223,7 +223,7 @@ export default function UsagePolicy() {
           <p className="mt-3">
             We reserve the right to take immediate action (including Level 3) for severe violations without
             prior warning. All enforcement decisions can be appealed by contacting{' '}
-            <a href="mailto:appeals@blockview.com" className="text-indigo-400">appeals@blockview.com</a> within
+            <a href="mailto:appeals@block-view.app" className="text-indigo-400">appeals@block-view.app</a> within
             14 days of the action.
           </p>
         </Section>
@@ -234,7 +234,7 @@ export default function UsagePolicy() {
           </p>
           <div className="bg-gray-800/40 rounded-xl p-4 mt-2 space-y-1 text-sm">
             <p className="text-white font-semibold">Report a Violation</p>
-            <p>Email: <a href="mailto:abuse@blockview.com" className="text-indigo-400">abuse@blockview.com</a></p>
+            <p>Email: <a href="mailto:abuse@block-view.app" className="text-indigo-400">abuse@block-view.app</a></p>
             <p className="text-gray-500 text-xs mt-2">Include relevant details: the user involved (if known), description of the violation, and any supporting evidence. All reports are investigated confidentially.</p>
           </div>
         </Section>
@@ -251,8 +251,8 @@ export default function UsagePolicy() {
           <p>For questions about this Usage Policy:</p>
           <div className="bg-gray-800/40 rounded-xl p-4 mt-2 space-y-1 text-sm">
             <p className="text-white font-semibold">BlockView Inc.</p>
-            <p>Email: <a href="mailto:support@blockview.com" className="text-indigo-400">support@blockview.com</a></p>
-            <p>Legal: <a href="mailto:legal@blockview.com" className="text-indigo-400">legal@blockview.com</a></p>
+            <p>Email: <a href="mailto:support@block-view.app" className="text-indigo-400">support@block-view.app</a></p>
+            <p>Legal: <a href="mailto:legal@block-view.app" className="text-indigo-400">legal@block-view.app</a></p>
           </div>
         </Section>
       </div>

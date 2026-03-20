@@ -91,7 +91,7 @@ export function Footer() {
 
         {/* Right: Copyright and links */}
         <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-          <span>&copy; 2026 BlockView</span>
+          <span>&copy; 2026 block-view.app</span>
           <Link to="/terms" className="hover:text-gray-300 transition-colors">Terms of Service</Link>
           <Link to="/privacy" className="hover:text-gray-300 transition-colors">Privacy Policy</Link>
           <Link to="/usage-policy" className="hover:text-gray-300 transition-colors">Usage Policy</Link>

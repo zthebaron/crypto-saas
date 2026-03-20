@@ -235,8 +235,8 @@ export default function Terms() {
           <p>If you have any questions about these Terms, please contact us at:</p>
           <div className="bg-gray-800/40 rounded-xl p-4 mt-2 space-y-1 text-sm">
             <p className="text-white font-semibold">BlockView Inc.</p>
-            <p>Email: <a href="mailto:legal@blockview.com" className="text-indigo-400">legal@blockview.com</a></p>
-            <p>Support: <a href="mailto:support@blockview.com" className="text-indigo-400">support@blockview.com</a></p>
+            <p>Email: <a href="mailto:legal@block-view.app" className="text-indigo-400">legal@block-view.app</a></p>
+            <p>Support: <a href="mailto:support@block-view.app" className="text-indigo-400">support@block-view.app</a></p>
           </div>
         </Section>
       </div>

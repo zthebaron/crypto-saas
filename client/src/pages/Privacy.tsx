@@ -151,7 +151,7 @@ export default function Privacy() {
           </ul>
           <p>
             To exercise any of these rights, please contact us at{' '}
-            <a href="mailto:privacy@blockview.com" className="text-indigo-400">privacy@blockview.com</a>.
+            <a href="mailto:privacy@block-view.app" className="text-indigo-400">privacy@block-view.app</a>.
             We will respond within 30 days. We may require identity verification before processing your request.
           </p>
         </Section>
@@ -175,7 +175,7 @@ export default function Privacy() {
             information from children. If we become aware that we have collected data from a child under 18,
             we will take steps to delete that information promptly. If you believe a child has provided us with
             personal data, please contact us at{' '}
-            <a href="mailto:privacy@blockview.com" className="text-indigo-400">privacy@blockview.com</a>.
+            <a href="mailto:privacy@block-view.app" className="text-indigo-400">privacy@block-view.app</a>.
           </p>
         </Section>
 
@@ -201,8 +201,8 @@ export default function Privacy() {
           <p>For privacy-related questions, requests, or concerns:</p>
           <div className="bg-gray-800/40 rounded-xl p-4 mt-2 space-y-1 text-sm">
             <p className="text-white font-semibold">BlockView Inc. — Privacy Team</p>
-            <p>Email: <a href="mailto:privacy@blockview.com" className="text-indigo-400">privacy@blockview.com</a></p>
-            <p>General Support: <a href="mailto:support@blockview.com" className="text-indigo-400">support@blockview.com</a></p>
+            <p>Email: <a href="mailto:privacy@block-view.app" className="text-indigo-400">privacy@block-view.app</a></p>
+            <p>General Support: <a href="mailto:support@block-view.app" className="text-indigo-400">support@block-view.app</a></p>
             <p className="text-gray-500 text-xs mt-2">We aim to respond to all privacy inquiries within 30 business days.</p>
           </div>
         </Section>

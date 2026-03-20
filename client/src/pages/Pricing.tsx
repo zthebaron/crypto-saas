@@ -345,8 +345,8 @@ export default function Pricing() {
 
                 {/* Direct contact */}
                 <div className="flex items-center justify-center gap-4 pt-2">
-                  <a href="mailto:sales@blockview.io" className="text-xs text-gray-400 hover:text-indigo-400 flex items-center gap-1">
-                    <Mail size={12} /> sales@blockview.io
+                  <a href="mailto:sales@block-view.app" className="text-xs text-gray-400 hover:text-indigo-400 flex items-center gap-1">
+                    <Mail size={12} /> sales@block-view.app
                   </a>
                   <a href="tel:+1-800-BLOCK" className="text-xs text-gray-400 hover:text-indigo-400 flex items-center gap-1">
                     <Phone size={12} /> 1-800-BLOCK
