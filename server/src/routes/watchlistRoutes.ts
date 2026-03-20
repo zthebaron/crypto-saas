@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/authMiddleware';
+import { optionalAuth } from '../middleware/authMiddleware';
 import { addToWatchlist, removeFromWatchlist, getWatchlist } from '../models/watchlistModel';
 
 const router = Router();
 
-router.use(requireAuth);
+router.use(optionalAuth);
 
 router.get('/', (req, res) => {
   try {

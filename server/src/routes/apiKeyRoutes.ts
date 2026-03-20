@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/authMiddleware';
+import { optionalAuth } from '../middleware/authMiddleware';
 import * as apiKeyModel from '../models/apiKeyModel';
 
 const router = Router();
-router.use(requireAuth);
+router.use(optionalAuth);
 
 router.get('/', (req, res) => {
   const keys = apiKeyModel.getApiKeys(req.user!.userId);

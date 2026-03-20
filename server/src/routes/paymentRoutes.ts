@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/authMiddleware';
+import { optionalAuth } from '../middleware/authMiddleware';
 import { createSubscription, createPayment } from '../models/adminModel';
 import { updateUserTier } from '../models/userModel';
 
@@ -14,7 +14,7 @@ const PROMO_CODES: Record<string, { tier: 'platinum' | 'enterprise'; label: stri
 })();
 
 const router = Router();
-router.use(requireAuth);
+router.use(optionalAuth);
 
 // Create checkout session (Stripe)
 router.post('/checkout/stripe', async (req, res) => {

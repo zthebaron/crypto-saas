@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/authMiddleware';
+import { optionalAuth } from '../middleware/authMiddleware';
 import * as notifModel from '../models/notificationModel';
 
 const router = Router();
 
-router.use(requireAuth);
+router.use(optionalAuth);
 
 // List notifications
 router.get('/', (req, res) => {

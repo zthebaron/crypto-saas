@@ -74,7 +74,7 @@ if (config.isDev) {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/market', marketRoutes);
-app.use('/api/agents', requireAuth, agentRoutes);        // Was optionalAuth — now requires login
+app.use('/api/agents', optionalAuth, agentRoutes);        // Open access for now — Google auth later
 app.use('/api/signals', signalRoutes);
 app.use('/api/watchlist', watchlistRoutes);
 app.use('/api/chat', optionalAuth, chatRoutes);
@@ -114,8 +114,8 @@ wss.on('connection', (ws: AuthenticatedWs, req) => {
       ws.userId = payload.userId;
       ws.isAuthenticated = true;
     } catch {
-      ws.close(4001, 'Invalid or expired token');
-      return;
+      // Allow connection even with invalid token — open access for now
+      ws.isAuthenticated = false;
     }
   } else {
     ws.isAuthenticated = false;

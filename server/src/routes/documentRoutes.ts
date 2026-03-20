@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { requireAuth } from '../middleware/authMiddleware';
+import { optionalAuth } from '../middleware/authMiddleware';
 import * as docModel from '../models/documentModel';
 import { extractTextAsync } from '../services/documentService';
 
@@ -24,7 +24,7 @@ const upload = multer({
 });
 const router = Router();
 
-router.use(requireAuth);
+router.use(optionalAuth);
 
 // Upload document
 router.post('/upload', upload.single('file'), async (req, res) => {

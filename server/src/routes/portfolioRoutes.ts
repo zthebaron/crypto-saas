@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/authMiddleware';
+import { optionalAuth } from '../middleware/authMiddleware';
 import * as portfolioModel from '../models/portfolioModel';
 import { getPortfolioSummary } from '../services/portfolioService';
 import { getDb } from '../models/database';
 
 const router = Router();
 
-router.use(requireAuth);
+router.use(optionalAuth);
 
 // Get portfolio summary with live prices
 router.get('/', async (req, res) => {
