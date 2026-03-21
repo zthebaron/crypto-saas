@@ -10,6 +10,30 @@ interface NewsItem {
   source: string;
   publishedAt: string;
   category: string;
+  thumbnail: string;
+}
+
+// Category-specific thumbnail colors and icons for generated images
+const CATEGORY_THUMBNAILS: Record<string, { gradient: string; emoji: string }> = {
+  Bitcoin: { gradient: 'from-orange-600 to-amber-500', emoji: '₿' },
+  Ethereum: { gradient: 'from-indigo-600 to-purple-500', emoji: 'Ξ' },
+  DeFi: { gradient: 'from-green-600 to-emerald-500', emoji: '🔗' },
+  Regulation: { gradient: 'from-blue-600 to-cyan-500', emoji: '⚖️' },
+  Exchanges: { gradient: 'from-yellow-600 to-orange-500', emoji: '📊' },
+  'AI & Trading': { gradient: 'from-violet-600 to-fuchsia-500', emoji: '🤖' },
+  Stablecoins: { gradient: 'from-teal-600 to-green-500', emoji: '💲' },
+  Infrastructure: { gradient: 'from-slate-600 to-zinc-500', emoji: '🏗️' },
+  CBDC: { gradient: 'from-sky-600 to-blue-500', emoji: '🏦' },
+  NFTs: { gradient: 'from-pink-600 to-rose-500', emoji: '🎨' },
+};
+
+function NewsThumbnail({ category, className = '' }: { category: string; className?: string }) {
+  const thumb = CATEGORY_THUMBNAILS[category] || { gradient: 'from-gray-600 to-gray-500', emoji: '📰' };
+  return (
+    <div className={`bg-gradient-to-br ${thumb.gradient} rounded-xl flex items-center justify-center flex-shrink-0 ${className}`}>
+      <span className="text-white opacity-90 select-none" style={{ fontSize: className.includes('w-12') ? '1.5rem' : '2rem' }}>{thumb.emoji}</span>
+    </div>
+  );
 }
 
 // Generate crypto news from recent market events
@@ -23,6 +47,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'BlockView Research',
       publishedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
       category: 'Bitcoin',
+      thumbnail: '',
     },
     {
       title: 'Ethereum Layer 2 Solutions See Record Transaction Volumes',
@@ -31,6 +56,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'BlockView Research',
       publishedAt: new Date(now.getTime() - 4 * 60 * 60 * 1000).toISOString(),
       category: 'Ethereum',
+      thumbnail: '',
     },
     {
       title: 'SEC Moves Forward on Multiple Crypto ETF Applications',
@@ -39,6 +65,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'Regulatory Watch',
       publishedAt: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(),
       category: 'Regulation',
+      thumbnail: '',
     },
     {
       title: 'DeFi Total Value Locked Reaches New All-Time High',
@@ -47,6 +74,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'DeFi Pulse',
       publishedAt: new Date(now.getTime() - 8 * 60 * 60 * 1000).toISOString(),
       category: 'DeFi',
+      thumbnail: '',
     },
     {
       title: 'Major Exchange Announces Support for New Altcoins',
@@ -55,6 +83,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'Exchange News',
       publishedAt: new Date(now.getTime() - 10 * 60 * 60 * 1000).toISOString(),
       category: 'Exchanges',
+      thumbnail: '',
     },
     {
       title: 'AI-Powered Trading Bots Show Increased Market Activity',
@@ -63,6 +92,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'On-Chain Analytics',
       publishedAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(),
       category: 'AI & Trading',
+      thumbnail: '',
     },
     {
       title: 'Stablecoin Market Cap Expands as USDT Dominance Shifts',
@@ -71,6 +101,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'Market Data',
       publishedAt: new Date(now.getTime() - 14 * 60 * 60 * 1000).toISOString(),
       category: 'Stablecoins',
+      thumbnail: '',
     },
     {
       title: 'Cross-Chain Interoperability Protocols See Surge in Usage',
@@ -79,6 +110,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'Infrastructure',
       publishedAt: new Date(now.getTime() - 18 * 60 * 60 * 1000).toISOString(),
       category: 'Infrastructure',
+      thumbnail: '',
     },
     {
       title: 'Central Banks Accelerate CBDC Development Programs',
@@ -87,6 +119,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'Central Banking',
       publishedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
       category: 'CBDC',
+      thumbnail: '',
     },
     {
       title: 'NFT Market Shows Signs of Recovery with New Use Cases',
@@ -95,6 +128,7 @@ function generateNewsItems(): NewsItem[] {
       source: 'NFT Insights',
       publishedAt: new Date(now.getTime() - 30 * 60 * 60 * 1000).toISOString(),
       category: 'NFTs',
+      thumbnail: '',
     },
   ];
   return news;
@@ -378,10 +412,8 @@ export default function News() {
               {filtered.length > 0 && (
                 <Card className="border-indigo-500/20">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-indigo-600/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Newspaper size={24} className="text-indigo-400" />
-                    </div>
-                    <div className="flex-1">
+                    <NewsThumbnail category={filtered[0].category} className="w-24 h-24 md:w-32 md:h-24" />
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full">{filtered[0].category}</span>
                         <span className="text-[10px] text-gray-600 flex items-center gap-1"><Clock size={10} />{timeAgo(filtered[0].publishedAt)}</span>
@@ -398,13 +430,18 @@ export default function News() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filtered.slice(1).map((item, i) => (
                   <Card key={i}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full">{item.category}</span>
-                      <span className="text-[10px] text-gray-600 flex items-center gap-1"><Clock size={10} />{timeAgo(item.publishedAt)}</span>
+                    <div className="flex gap-3">
+                      <NewsThumbnail category={item.category} className="w-12 h-12" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full">{item.category}</span>
+                          <span className="text-[10px] text-gray-600 flex items-center gap-1"><Clock size={10} />{timeAgo(item.publishedAt)}</span>
+                        </div>
+                        <h3 className="text-sm font-semibold text-white mb-1.5">{item.title}</h3>
+                        <p className="text-xs text-gray-400 line-clamp-2 mb-2">{item.description}</p>
+                        <p className="text-[10px] text-gray-600">Source: {item.source}</p>
+                      </div>
                     </div>
-                    <h3 className="text-sm font-semibold text-white mb-1.5">{item.title}</h3>
-                    <p className="text-xs text-gray-400 line-clamp-2 mb-2">{item.description}</p>
-                    <p className="text-[10px] text-gray-600">Source: {item.source}</p>
                   </Card>
                 ))}
               </div>

@@ -4,7 +4,7 @@ import { AGENT_ROLES, AGENT_LABELS } from '@crypto-saas/shared';
 import type { AgentRole, AgentStatus } from '@crypto-saas/shared';
 import {
   Scan, Brain, ShieldCheck, Compass, PieChart as PieChartIcon,
-  Play, CheckCircle2, AlertCircle, Loader2,
+  Play, CheckCircle2, AlertCircle, Loader2, Search, X, Square,
 } from 'lucide-react';
 
 /* ─── Agent Metadata ─── */
@@ -327,15 +327,35 @@ function AgentNode({
 
 /* ─── Main Pipeline Visualization ─── */
 
+const SECTOR_SUGGESTIONS = [
+  'AI & Machine Learning', 'DeFi', 'Gaming & Metaverse', 'Layer 1', 'Layer 2',
+  'Meme Coins', 'RWA', 'DePin', 'Privacy', 'NFT & Social',
+];
+
 export function AnimatedPipeline() {
-  const { agentStatuses, pipelineRunning, triggerRun } = useAgentStore();
+  const { agentStatuses, pipelineRunning, triggerRun, stopPipeline } = useAgentStore();
   const [starting, setStarting] = useState(false);
+  const [sectorFocus, setSectorFocus] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const handleRunPipeline = async () => {
     setStarting(true);
+    setShowSuggestions(false);
     try {
-      await triggerRun();
+      await triggerRun(undefined, sectorFocus.trim() || undefined);
     } finally {
       // The pipeline running state is managed by websocket events
       setTimeout(() => setStarting(false), 2000);
@@ -428,32 +448,96 @@ export function AnimatedPipeline() {
             )}
           </div>
 
-          <button
-            onClick={handleRunPipeline}
-            disabled={pipelineRunning || starting}
-            className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-300 ${
-              pipelineRunning || starting
-                ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40'
-            }`}
-          >
-            {pipelineRunning ? (
-              <>
-                <Loader2 size={14} className="animate-spin" />
-                Running...
-              </>
-            ) : starting ? (
-              <>
-                <Loader2 size={14} className="animate-spin" />
-                Starting...
-              </>
-            ) : (
-              <>
-                <Play size={14} />
-                Run Pipeline
-              </>
+          <div className="flex items-center gap-2">
+            {pipelineRunning && (
+              <button
+                onClick={() => stopPipeline()}
+                className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-300 flex-shrink-0 bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600/30 hover:text-red-300"
+              >
+                <Square size={12} className="fill-current" />
+                Stop
+              </button>
             )}
-          </button>
+            <button
+              onClick={handleRunPipeline}
+              disabled={pipelineRunning || starting}
+              className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-300 flex-shrink-0 ${
+                pipelineRunning || starting
+                  ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40'
+              }`}
+            >
+              {pipelineRunning ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Running...
+                </>
+              ) : starting ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Starting...
+                </>
+              ) : (
+                <>
+                  <Play size={14} />
+                  Run Pipeline
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Sector Focus Search */}
+        <div ref={searchRef} className="mb-4 relative z-20">
+          <div className="relative">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            <input
+              type="text"
+              value={sectorFocus}
+              onChange={(e) => { setSectorFocus(e.target.value); setShowSuggestions(true); }}
+              onFocus={() => setShowSuggestions(true)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !pipelineRunning && !starting) handleRunPipeline(); }}
+              placeholder="Search specific sector (e.g. AI, DeFi, Gaming, Layer 2...)"
+              disabled={pipelineRunning || starting}
+              className="w-full bg-gray-800/60 border border-gray-700/50 rounded-xl pl-10 pr-10 py-2.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-indigo-500/60 focus:bg-gray-800/80 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            />
+            {sectorFocus && (
+              <button
+                onClick={() => { setSectorFocus(''); setShowSuggestions(false); }}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Active sector badge */}
+          {sectorFocus.trim() && !pipelineRunning && (
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-[10px] text-gray-500">Sector focus:</span>
+              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/20">
+                🎯 {sectorFocus.trim()}
+              </span>
+            </div>
+          )}
+
+          {/* Suggestion pills */}
+          {showSuggestions && !pipelineRunning && !starting && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {SECTOR_SUGGESTIONS
+                .filter(s => !sectorFocus || s.toLowerCase().includes(sectorFocus.toLowerCase()))
+                .map(suggestion => (
+                  <button
+                    key={suggestion}
+                    onClick={() => { setSectorFocus(suggestion); setShowSuggestions(false); }}
+                    className="text-[11px] px-2.5 py-1 rounded-lg bg-gray-800/80 text-gray-400 border border-gray-700/40 hover:border-indigo-500/40 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all"
+                  >
+                    {suggestion}
+                  </button>
+                ))
+              }
+            </div>
+          )}
         </div>
 
         {/* Progress bar */}
@@ -497,7 +581,7 @@ export function AnimatedPipeline() {
         {/* Bottom hint text */}
         {allIdle && !pipelineRunning && (
           <p className="text-center text-[10px] text-gray-600 mt-4 relative z-10">
-            Click "Run Pipeline" to start the AI analysis chain
+            Search a specific sector above or click &ldquo;Run Pipeline&rdquo; for a full market sweep
           </p>
         )}
       </div>

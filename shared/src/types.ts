@@ -128,6 +128,7 @@ export interface AgentContext {
   trendingLosers: TrendingCoin[];
   previousReports: AgentReport[];
   userWatchlist?: string[];
+  sectorFocus?: string;
   runId: string;
 }
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { runFullPipeline, runSingleAgent, getAgentStatuses } from '../agents/coordinator';
+import { runFullPipeline, runSingleAgent, getAgentStatuses, stopPipeline } from '../agents/coordinator';
 import { getRecentReports, getReportsByRunId, getReportById } from '../models/reportModel';
 import { getRecentRuns } from '../models/runModel';
 import { getScheduleInterval, setScheduleInterval } from '../agents/scheduler';
@@ -16,7 +16,8 @@ router.post('/run', async (req, res) => {
   try {
     const userId = (req as any).user?.userId;
     const watchlist = req.body.watchlist as string[] | undefined;
-    const runId = await runFullPipeline(userId, watchlist);
+    const sectorFocus = req.body.sectorFocus as string | undefined;
+    const runId = await runFullPipeline(userId, watchlist, sectorFocus);
     res.json({ runId, message: 'Pipeline completed' });
   } catch (error: any) {
     console.error('Agent run error:', error.message);
@@ -39,6 +40,12 @@ router.post('/run/:role', async (req, res) => {
     console.error('Single agent error:', error.message);
     res.status(500).json({ error: 'Failed to start agent' });
   }
+});
+
+// Stop pipeline
+router.post('/stop', (_req, res) => {
+  stopPipeline();
+  res.json({ message: 'Pipeline stop requested' });
 });
 
 // Get agent statuses

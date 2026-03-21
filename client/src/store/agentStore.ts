@@ -11,7 +11,8 @@ interface AgentState {
   pipelineRunning: boolean;
   loading: boolean;
   error: string | null;
-  triggerRun: (watchlist?: string[]) => Promise<void>;
+  triggerRun: (watchlist?: string[], sectorFocus?: string) => Promise<void>;
+  stopPipeline: () => Promise<void>;
   fetchReports: (limit?: number) => Promise<void>;
   fetchReportsByRun: (runId: string) => Promise<AgentReport[]>;
   fetchSignals: (limit?: number) => Promise<void>;
@@ -40,12 +41,21 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   loading: false,
   error: null,
 
-  triggerRun: async (watchlist) => {
+  triggerRun: async (watchlist, sectorFocus) => {
     set({ pipelineRunning: true, error: null });
     try {
-      await agentsApi.triggerRun(watchlist);
+      await agentsApi.triggerRun(watchlist, sectorFocus);
     } catch (err: any) {
       set({ error: 'Failed to trigger pipeline', pipelineRunning: false });
+    }
+  },
+
+  stopPipeline: async () => {
+    try {
+      await agentsApi.stopPipeline();
+      set({ pipelineRunning: false, agentStatuses: { ...defaultStatuses } });
+    } catch (err: any) {
+      set({ error: 'Failed to stop pipeline' });
     }
   },
 

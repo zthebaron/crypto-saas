@@ -25,6 +25,7 @@ import adminRoutes from './routes/adminRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import apiKeyRoutes from './routes/apiKeyRoutes';
 import tradeRoutes from './routes/tradeRoutes';
+import dexScreenerRoutes from './routes/dexScreenerRoutes';
 import type { WsEvent } from '@crypto-saas/shared';
 import { verifyToken } from './services/authService';
 
@@ -88,6 +89,7 @@ app.use('/api/admin', adminRoutes);                       // Admin auth handled 
 app.use('/api/payments', paymentRoutes);
 app.use('/api/api-keys', apiKeyRoutes);
 app.use('/api/trade', tradeRoutes);
+app.use('/api/dex', dexScreenerRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

@@ -28,6 +28,8 @@ const agentInstances: Record<AgentRole, BaseAgent> = {
 const agentStatuses: Record<AgentRole, string> = {} as any;
 for (const role of AGENT_ROLES) agentStatuses[role] = 'idle';
 
+let pipelineCancelled = false;
+
 let broadcast: BroadcastFn = () => {};
 
 export function setBroadcast(fn: BroadcastFn) {
@@ -38,15 +40,27 @@ export function getAgentStatuses() {
   return { ...agentStatuses };
 }
 
+export function stopPipeline() {
+  pipelineCancelled = true;
+  // Reset all running agents to idle
+  for (const role of AGENT_ROLES) {
+    if (agentStatuses[role] === 'running') {
+      agentStatuses[role] = 'idle';
+    }
+  }
+  console.log('[Pipeline] Stop requested by user');
+}
+
 function emit(type: WsEvent['type'], payload: unknown) {
   broadcast({ type, payload, timestamp: new Date().toISOString() });
 }
 
-export async function runFullPipeline(userId?: string, watchlist?: string[]): Promise<string> {
+export async function runFullPipeline(userId?: string, watchlist?: string[], sectorFocus?: string): Promise<string> {
   const run = createAgentRun(userId);
   const runId = run.id;
 
   console.log(`[Pipeline] Starting full pipeline run ${runId}`);
+  pipelineCancelled = false;
 
   // Pre-flight check: validate API key is configured (not placeholder)
   if (!config.anthropicApiKey || config.anthropicApiKey === 'your_anthropic_api_key_here') {
@@ -84,6 +98,19 @@ export async function runFullPipeline(userId?: string, watchlist?: string[]): Pr
 
     // Run agents sequentially
     for (const role of AGENT_ROLES) {
+      // Check for cancellation before each agent
+      if (pipelineCancelled) {
+        console.log(`[Pipeline] Cancelled before ${AGENT_LABELS[role]}`);
+        for (const r of AGENT_ROLES) {
+          if (agentStatuses[r] !== 'completed' && agentStatuses[r] !== 'error') {
+            agentStatuses[r] = 'idle';
+          }
+        }
+        completeAgentRun(runId, 'error');
+        emit('pipeline_complete', { runId, status: 'cancelled' });
+        return runId;
+      }
+
       agentStatuses[role] = 'running';
       emit('agent_status', { role, status: 'running', runId, label: AGENT_LABELS[role] });
 
@@ -96,6 +123,7 @@ export async function runFullPipeline(userId?: string, watchlist?: string[]): Pr
         trendingLosers: trending.losers,
         previousReports: completedReports,
         userWatchlist: watchlist,
+        sectorFocus,
         runId,
       };
 

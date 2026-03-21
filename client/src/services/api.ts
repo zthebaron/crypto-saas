@@ -46,10 +46,12 @@ export const market = {
 
 // --- Agents ---
 export const agents = {
-  triggerRun: (watchlist?: string[]) =>
-    api.post<{ runId: string }>('/agents/run', { watchlist }).then(r => r.data),
+  triggerRun: (watchlist?: string[], sectorFocus?: string) =>
+    api.post<{ runId: string }>('/agents/run', { watchlist, sectorFocus }).then(r => r.data),
   triggerSingle: (role: AgentRole) =>
     api.post<{ runId: string }>(`/agents/run/${role}`).then(r => r.data),
+  stopPipeline: () =>
+    api.post('/agents/stop').then(r => r.data),
   getStatus: () =>
     api.get<{ data: Record<AgentRole, AgentStatus> }>('/agents/status').then(r => r.data.data),
   getReports: (limit = 20, role?: AgentRole) =>
@@ -238,4 +240,18 @@ export const trade = {
     api.get<{ data: any[] }>('/trade/history').then(r => r.data.data),
   getChains: () =>
     api.get<{ data: number[] }>('/trade/chains').then(r => r.data.data),
+};
+
+// --- DEX Screener ---
+export const dex = {
+  search: (q: string) =>
+    api.get<{ data: any[] }>('/dex/search', { params: { q } }).then(r => r.data.data),
+  topBoosted: () =>
+    api.get<{ data: any[] }>('/dex/boosted/top').then(r => r.data.data),
+  latestBoosted: () =>
+    api.get<{ data: any[] }>('/dex/boosted/latest').then(r => r.data.data),
+  tokenProfiles: () =>
+    api.get<{ data: any[] }>('/dex/profiles').then(r => r.data.data),
+  tokenPairs: (chainId: string, tokenAddress: string) =>
+    api.get<{ data: any[] }>(`/dex/token-pairs/${chainId}/${tokenAddress}`).then(r => r.data.data),
 };
