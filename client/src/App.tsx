@@ -36,6 +36,7 @@ import Trade from './pages/Trade';
 import BrandKit from './pages/BrandKit';
 import DexScreener from './pages/DexScreener';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import TokenUsage from './pages/TokenUsage';
 
 const queryClient = new QueryClient();
 
@@ -112,6 +113,7 @@ function AppInner() {
         <Route path="/screener" element={<DexScreener />} />
         <Route path="/brand" element={<AuthGuard><BrandKit /></AuthGuard>} />
         <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+        <Route path="/token-usage" element={<AuthGuard><TokenUsage /></AuthGuard>} />
         <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
       </Route>
     </Routes>

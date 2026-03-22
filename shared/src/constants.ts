@@ -17,9 +17,9 @@ export const AGENT_LABELS: Record<AgentRole, string> = {
 };
 
 export const SUBSCRIPTION_TIERS = {
-  free: { label: 'Free', maxRunsPerDay: 5, reportHistory: 24, maxCoins: 50 },
-  pro: { label: 'Pro', maxRunsPerDay: 50, reportHistory: Infinity, maxCoins: 100 },
-  premium: { label: 'Premium', maxRunsPerDay: Infinity, reportHistory: Infinity, maxCoins: 500 },
+  free: { label: 'Free Trial', maxRunsPerDay: 5, reportHistory: 24, maxCoins: 50, price: 0, trialDays: 7 },
+  platinum: { label: 'Platinum', maxRunsPerDay: 50, reportHistory: Infinity, maxCoins: 200, price: 99 },
+  enterprise: { label: 'Enterprise', maxRunsPerDay: Infinity, reportHistory: Infinity, maxCoins: 500, price: 299 },
 } as const;
 
 export const CMC_API_BASE = 'https://pro-api.coinmarketcap.com';

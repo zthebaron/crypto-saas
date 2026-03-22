@@ -4,10 +4,10 @@ import { Card } from '../components/ui/Card';
 import { SUBSCRIPTION_TIERS } from '@crypto-saas/shared';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Shield, Zap, Crown, Tag, CheckCircle, ArrowRight, Sparkles, X } from 'lucide-react';
+import { Shield, Zap, Crown, Building2, Tag, CheckCircle, ArrowRight, Sparkles, X } from 'lucide-react';
 
-const tierIcons = { free: Shield, pro: Zap, premium: Crown };
-const tierColors = { free: 'text-gray-400', pro: 'text-indigo-400', premium: 'text-yellow-400' };
+const tierIcons: Record<string, any> = { free: Shield, platinum: Crown, enterprise: Building2 };
+const tierColors: Record<string, string> = { free: 'text-gray-400', platinum: 'text-indigo-400', enterprise: 'text-yellow-400' };
 
 export default function Settings() {
   const { user, isAuthenticated, logout, updateUser } = useAuthStore();
@@ -21,8 +21,7 @@ export default function Settings() {
   const [showCongrats, setShowCongrats] = useState(false);
   const [congratsTier, setCongratsTier] = useState('');
 
-  const RAILWAY_API = 'https://crypto-saasserver-production.up.railway.app/api';
-  const API = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : RAILWAY_API);
+  const API = import.meta.env.VITE_API_URL || '/api';
 
   useEffect(() => {
     if (!isAuthenticated) navigate('/login');
@@ -223,6 +222,14 @@ export default function Settings() {
               {promoLoading ? 'Applying...' : 'Redeem'}
             </button>
           </div>
+        </div>
+      </Card>
+
+      {/* API Token Note */}
+      <Card>
+        <div className="text-xs text-gray-400">
+          <p className="font-semibold text-gray-300 mb-1">API Token Usage</p>
+          <p>Customers need to use their Anthropic Token for agent runs or they will be billed per agent run and any API token usage.</p>
         </div>
       </Card>
 

@@ -39,8 +39,7 @@ interface PaymentData {
   createdAt: string;
 }
 
-const RAILWAY_API = 'https://crypto-saasserver-production.up.railway.app/api';
-const API_BASE = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? '/api' : RAILWAY_API);
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 const api = (path: string, opts?: RequestInit) => {
   const token = localStorage.getItem('token');
@@ -98,7 +97,7 @@ export default function AdminDashboard() {
     );
   }
 
-  const tierColors: Record<string, string> = { free: 'text-gray-400', pro: 'text-indigo-400', premium: 'text-yellow-400' };
+  const tierColors: Record<string, string> = { free: 'text-gray-400', platinum: 'text-indigo-400', enterprise: 'text-yellow-400' };
   const statusColors: Record<string, string> = { active: 'bg-green-500/15 text-green-400', suspended: 'bg-yellow-500/15 text-yellow-400', banned: 'bg-red-500/15 text-red-400' };
 
   return (
@@ -166,8 +165,8 @@ export default function AdminDashboard() {
               className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-indigo-500">
               <option value="all">All Tiers</option>
               <option value="free">Free</option>
-              <option value="pro">Platinum</option>
-              <option value="premium">Enterprise</option>
+              <option value="platinum">Platinum</option>
+              <option value="enterprise">Enterprise</option>
             </select>
           </div>
 
@@ -192,7 +191,7 @@ export default function AdminDashboard() {
                       <p className="text-gray-500 text-xs">{u.email}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs font-semibold capitalize ${tierColors[u.tier] || 'text-gray-400'}`}>{u.tier === 'pro' ? 'Platinum' : u.tier === 'premium' ? 'Enterprise' : 'Free'}</span>
+                      <span className={`text-xs font-semibold capitalize ${tierColors[u.tier] || 'text-gray-400'}`}>{u.tier === 'platinum' ? 'Platinum' : u.tier === 'enterprise' ? 'Enterprise' : u.tier === 'pro' ? 'Platinum' : u.tier === 'premium' ? 'Enterprise' : 'Free'}</span>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium capitalize ${statusColors[u.status] || ''}`}>{u.status}</span>
@@ -208,9 +207,9 @@ export default function AdminDashboard() {
                       </button>
                       {actionMenu === u.id && (
                         <div className="absolute right-4 top-full mt-1 w-48 bg-gray-900 border border-gray-800 rounded-xl shadow-xl z-50 py-1">
-                          <button onClick={() => updateUser(u.id, 'tier', u.tier === 'pro' ? 'free' : 'pro')}
+                          <button onClick={() => updateUser(u.id, 'tier', u.tier === 'platinum' ? 'free' : 'platinum')}
                             className="w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-gray-800 flex items-center gap-2">
-                            <Crown size={12} /> {u.tier === 'pro' ? 'Downgrade to Free' : 'Upgrade to Platinum'}
+                            <Crown size={12} /> {u.tier === 'platinum' ? 'Downgrade to Free' : 'Upgrade to Platinum'}
                           </button>
                           <button onClick={() => updateUser(u.id, 'role', u.role === 'admin' ? 'user' : 'admin')}
                             className="w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-gray-800 flex items-center gap-2">

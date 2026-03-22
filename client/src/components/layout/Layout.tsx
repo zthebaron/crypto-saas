@@ -27,6 +27,7 @@ const pageTitles: Record<string, string> = {
   '/screener': 'DEX Screener',
   '/brand': 'Brand Kit',
   '/admin': 'Admin Dashboard',
+  '/token-usage': 'Token Usage & Cost',
   '/settings': 'Settings',
 };
 

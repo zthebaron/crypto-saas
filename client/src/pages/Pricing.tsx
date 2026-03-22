@@ -5,28 +5,27 @@ import { Card } from '../components/ui/Card';
 
 const plans = [
   {
-    name: 'Free',
+    name: 'Free Trial',
     price: '$0',
-    period: 'forever',
+    period: '',
     icon: Zap,
     color: 'text-gray-400',
     bgColor: 'bg-gray-800',
     borderColor: 'border-gray-700',
     features: [
-      '5 agent runs per day',
+      '5 agent runs/day',
       'Top 50 coins analysis',
       '24h report history',
-      'Basic signals & alerts',
-      'Market data dashboard',
-      'Community chat support',
+      'Basic signals',
+      '7-day free trial, then $99/mo',
     ],
-    cta: 'Get Started Free',
+    cta: 'Start Free Trial',
     ctaClass: 'btn-secondary',
     action: 'register' as const,
   },
   {
     name: 'Platinum',
-    price: '$49',
+    price: '$99',
     period: '/month',
     icon: Crown,
     color: 'text-indigo-400',
@@ -34,26 +33,26 @@ const plans = [
     borderColor: 'border-indigo-500/30',
     popular: true,
     features: [
-      '50 agent runs per day',
+      '50 agent runs/day',
       'Top 200 coins analysis',
-      'Full report history',
+      'Full history',
       'Advanced signals with confidence scores',
-      'Portfolio tracking & P&L',
-      'Knowledge base (50 documents)',
-      'Custom alert rules (25 rules)',
-      'PDF export reports',
-      'Coin comparison tool',
-      'Signal accuracy tracking',
-      'Priority email support',
+      'Portfolio tracking',
+      'Knowledge base (50 docs)',
+      '25 custom alert rules',
+      'PDF exports',
+      'Coin comparison',
+      'Accuracy tracking',
       'Real-time WebSocket updates',
     ],
     cta: 'Start Platinum Trial',
     ctaClass: 'btn-primary',
     action: 'stripe' as const,
+    note: '7-day free trial, credit card required',
   },
   {
     name: 'Enterprise',
-    price: '$199',
+    price: '$299',
     period: '/month',
     icon: Building2,
     color: 'text-yellow-400',
@@ -61,18 +60,15 @@ const plans = [
     borderColor: 'border-yellow-500/20',
     features: [
       'Unlimited agent runs',
-      'All 500+ coins analysis',
-      'Full report history',
+      '500+ coins',
       'All Platinum features',
-      'Unlimited knowledge base',
-      'Unlimited alert rules',
-      'API access for custom integrations',
+      'Unlimited knowledge base & alert rules',
+      'API access',
       'Custom agent configurations',
-      'Team collaboration (5 seats)',
+      '5 team seats',
       'White-label reporting',
       'Dedicated account manager',
-      'Custom SLA & uptime guarantee',
-      'Priority phone & Slack support',
+      'Custom SLA',
     ],
     cta: 'Contact Sales',
     ctaClass: 'bg-yellow-600 hover:bg-yellow-500 text-black font-semibold px-6 py-2.5 rounded-lg transition-colors',
@@ -227,9 +223,9 @@ export default function Pricing() {
         <div className="space-y-4">
           {[
             { q: 'Can I upgrade or downgrade at any time?', a: 'Yes, you can change your plan at any time. Changes take effect immediately, and we prorate your billing.' },
-            { q: 'Is there a free trial for paid plans?', a: 'Yes! Platinum comes with a 14-day free trial. No credit card required to start.' },
-            { q: 'What payment methods do you accept?', a: 'We accept all major credit cards, PayPal, and cryptocurrency payments (BTC, ETH, USDT).' },
-            { q: 'Do you offer refunds?', a: 'We offer a 30-day money-back guarantee on all paid plans. No questions asked.' },
+            { q: 'Is there a free trial?', a: 'Yes! 7-day free trial on Platinum (credit card required — pays for API). 7-day money-back guarantee.' },
+            { q: 'What payment methods do you accept?', a: 'Credit cards, PayPal, and crypto payments (BTC, ETH, USDT).' },
+            { q: 'Do I need my own API key?', a: 'Customers need to use their Anthropic Token for agent runs or they will be billed per agent run and any API token usage.' },
           ].map(({ q, a }) => (
             <Card key={q}>
               <h3 className="text-sm font-semibold text-white mb-1">{q}</h3>
@@ -345,11 +341,11 @@ export default function Pricing() {
 
                 {/* Direct contact */}
                 <div className="flex items-center justify-center gap-4 pt-2">
-                  <a href="mailto:sales@block-view.app" className="text-xs text-gray-400 hover:text-indigo-400 flex items-center gap-1">
-                    <Mail size={12} /> sales@block-view.app
+                  <a href="mailto:Tim@DigitalBoutique.ai" className="text-xs text-gray-400 hover:text-indigo-400 flex items-center gap-1">
+                    <Mail size={12} /> Tim@DigitalBoutique.ai
                   </a>
-                  <a href="tel:+1-800-BLOCK" className="text-xs text-gray-400 hover:text-indigo-400 flex items-center gap-1">
-                    <Phone size={12} /> 1-800-BLOCK
+                  <a href="tel:+1-310-453-5555" className="text-xs text-gray-400 hover:text-indigo-400 flex items-center gap-1">
+                    <Phone size={12} /> 310-453-5555
                   </a>
                 </div>
               </div>

@@ -3,7 +3,7 @@ import {
   LayoutDashboard, BarChart3, Bot, Zap, Star, Settings, LogOut,
   Briefcase, GitCompareArrows, BookOpen, ShieldAlert, Target,
   CreditCard, Info, Newspaper, Plug, ShieldCheck, ArrowLeftRight, Palette,
-  PanelLeftClose, PanelLeftOpen, X, Monitor,
+  PanelLeftClose, PanelLeftOpen, X, Monitor, Coins,
 } from 'lucide-react';
 import { useAgentStore } from '../../store/agentStore';
 import { useAuthStore } from '../../store/authStore';
@@ -30,6 +30,7 @@ const navItems = [
   { to: '/about', icon: Info, label: 'About Us' },
   { to: '/integrations', icon: Plug, label: 'Integrations' },
   { to: '/brand', icon: Palette, label: 'Brand Kit', authOnly: true },
+  { to: '/token-usage', icon: Coins, label: 'Token Usage', authOnly: true },
   { to: '/admin', icon: ShieldCheck, label: 'Admin', adminOnly: true },
   { to: '/settings', icon: Settings, label: 'Settings', authOnly: true },
 ] as const;
