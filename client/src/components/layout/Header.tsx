@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Play, RefreshCw, Sun, Moon, ExternalLink, ChevronDown, Clock, Timer, Menu } from 'lucide-react';
 import { useMarketStore } from '../../store/marketStore';
 import { useAgentStore } from '../../store/agentStore';
@@ -27,6 +27,34 @@ const RESEARCH_LINKS = [
   { name: 'Messari', url: 'https://messari.io', color: '#1652F0' },
   { name: 'Glassnode', url: 'https://glassnode.com', color: '#1FBF92' },
 ];
+
+function LiveClock() {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const shortTz = now.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop() || tz;
+
+  const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  const date = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
+  return (
+    <div className="hidden lg:flex items-center gap-2 text-xs text-gray-400 bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-700/40">
+      <Clock size={12} className="text-gray-500 flex-shrink-0" />
+      <div className="flex items-center gap-1.5">
+        <span className="text-gray-200 font-mono tabular-nums">{time}</span>
+        <span className="text-gray-600">·</span>
+        <span className="text-gray-400">{date}</span>
+        <span className="text-gray-600">·</span>
+        <span className="text-indigo-400/70 text-[10px] font-medium">{shortTz}</span>
+      </div>
+    </div>
+  );
+}
 
 function formatUsd(n: number): string {
   if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T';
@@ -93,6 +121,7 @@ export function Header({ title }: { title: string }) {
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
+        <LiveClock />
         {/* Global ticker - hidden on smaller screens */}
         {globalMetrics && (
           <div className="hidden xl:flex items-center gap-5 text-xs text-gray-400">
